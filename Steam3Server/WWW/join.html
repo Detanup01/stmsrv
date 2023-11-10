@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register Site</title>
+</head>
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        color: white;
+    }
+
+    * {
+        box-sizing: border-box
+    }
+
+    /* Full-width input fields */
+    input[type=text], input[type=password] {
+        width: 100%;
+        padding: 15px;
+        margin: 5px 0 22px 0;
+        display: inline-block;
+        border: none;
+        background: #f1f1f1;
+    }
+
+    input[type=text]:focus, input[type=password]:focus 
+    {
+        background-color: #ddd;
+        outline: none;
+    }
+
+    hr 
+    {
+        border: 1px solid #f1f1f1;
+        margin-bottom: 25px;
+    }
+
+    /* Add padding to container elements */
+    .container {
+        padding: 16px;
+    }
+</style>
+<body>
+    <!-- Dummy frame for no redirect -->
+    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+    <h2>Register Form</h2>
+    <hr>
+    <form action="https://api.steampowered.com/customapi/register" method="post" target="dummyframe" style="border:1px solid #ccc">
+        <div class="container">
+            <label for="uname"><b>Username</b></label>
+            <input type="text" placeholder="Enter Username" name="uname" required>
+
+            <label for="mail"><b>Email</b></label>
+            <input type="text" placeholder="Enter Username" name="mail" required>
+
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="psw" required>
+
+            <button type="submit">Register</button>
+        </div>
+    </form>
+
+</body>
+</html>
