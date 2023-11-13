@@ -32,8 +32,8 @@ namespace Steam3Server.CMServer.CMPackets
                 Private = NetHelpers.GetIPAddressAsUInt(endPoint.Address);
             }
 
-            var ticket = AppTickets.CreateTicket(clientMsgProtobuf.Header.Proto.ClientSteamId, request.AppId, Public, Private, 0, new List<uint>() { 0 }, new List<AppTickets.DlcDetails>());
-            protoRSP.Body.Ticket = ByteString.CopyFrom(ticket);
+            //var ticket = AppTickets.CreateTicket(clientMsgProtobuf.Header.Proto.ClientSteamId, request.AppId, Public, Private, 0, new List<uint>() { 0 }, new List<AppTickets.DlcDetails>());
+           // protoRSP.Body.Ticket = ByteString.CopyFrom(ticket);
             Debug.PWDebug(protoRSP.Body.ToString());
             rsp = protoRSP.Serialize();
             sessionBase.SendBinaryAsync(rsp);

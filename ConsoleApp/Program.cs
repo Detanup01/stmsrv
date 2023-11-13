@@ -23,7 +23,7 @@ namespace ConsoleApp
 
             Console.WriteLine(ticketstruct.ToString());
             Console.WriteLine();
-            Console.WriteLine(ticketstruct.ToCensored());
+           // Console.WriteLine(ticketstruct.ToCensored());
             /*
             Console.WriteLine();
 

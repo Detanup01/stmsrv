@@ -8,6 +8,28 @@ namespace Steam3Server.Others
 {
     public class AppTickets
     {
+        /*
+        For full readme before everything:
+
+        Sig Len = Always 128!
+
+        Full Len = Sig Len + Ownership Len + (IF GC == 56 else 0)
+
+        GCLen = Sig + OWLen
+
+        If has GC tokenLen = 20
+        else set to OWLen
+
+        unk is always zero??
+
+        CConTime is NOT EPOCH
+
+        IP For OT is same every req
+
+        GC IP is different every req
+
+        */
+
         public class DlcDetails
         {
             public uint AppId { get; set; }
@@ -15,24 +37,62 @@ namespace Steam3Server.Others
 
             public override string ToString()
             {
-                return $"\nAppId: {this.AppId}, LicensesCount: {Licenses.Count} Licenses: {string.Join(" ",this.Licenses)}";
+                string ret = $"\nAppId: {this.AppId}, LicensesCount: {Licenses.Count}";
+                if (Licenses.Count > 0)
+                {
+                    ret += $"Licenses: {string.Join(" ", this.Licenses)}";
+                }
+
+                return ret;
+            }
+        }
+
+        public class TicketRequest
+        {
+            // GC
+            public bool HasGCToken { get; set; }
+            public string GcToken { get; set; }
+
+            public uint Version { get; set; }
+            public SteamID SteamID { get; set; }
+            public uint AppId { get; set; }
+            public IPAddress OwnershipTicketExternalIP { get; set; }
+            public IPAddress OwnershipTicketInternalIP { get; set; }
+            public uint OwnershipFlags { get; set; }
+            public List<uint> Licenses { get; set; }
+            public List<DlcDetails> DLC { get; set; }
+        }
+
+
+
+        public class GCStruct
+        {
+            public string GcToken { get; set; }
+            public DateTime TokenGenerated { get; set; }
+            public IPAddress SessionExternalIP { get; set; }
+            public uint ClientConnectionTime { get; set; }
+            public uint ClientConnectionCount { get; set; }
+
+            public uint GCLen { get; set; }
+
+            public override string ToString()
+            {
+                return $"\nGCToken: {GcToken}, TokenGenerated: {TokenGenerated}, ExternalIP: {SessionExternalIP.ToString()}, CConnectionTime: {ClientConnectionTime}, CConnectionCount: {ClientConnectionCount}, GCLen: {GCLen}";
             }
         }
 
         public class TicketStruct
         {
             //Values that are useful
+            public int FullLen { get; set; }
             public uint TicketLength { get; set; }
+            public int OwnershipLength { get; set; }
             public bool HasGC { get; set; }
 
             //the Ticket
 
             //GC related
-            public string GcToken { get; set; }
-            public DateTime TokenGenerated { get; set; }
-            public IPAddress SessionExternalIP { get; set; }
-            public uint ClientConnectionTime { get; set; }
-            public uint ClientConnectionCount { get; set; }
+            public GCStruct GC { get; set; }
 
             // normal token related
             public uint Version { get; set; }
@@ -54,12 +114,12 @@ namespace Steam3Server.Others
                 string gc_specific = "";
                 if (HasGC)
                 {
-                    gc_specific = $"\nGCToken: {GcToken}, TokenGenerated: {TokenGenerated}, ExternalIP: {SessionExternalIP.ToString()}, CConnectionTime: {ClientConnectionTime}, CConnectionCount: {ClientConnectionCount}";
+                    gc_specific = GC.ToString();
                 }
 
 
 
-                return $"TicketLen : {TicketLength}, Version: {Version}, SteamID: {SteamID.ToString()}, AppId: {AppID}, " +
+                return $"FullLen: {FullLen}, TicketLen : {TicketLength}, OwnershipLength: {OwnershipLength}, Version: {Version}, SteamID: {SteamID.ToString()}, AppId: {AppID}, " +
                     $"OTExtIP: {OwnershipTicketExternalIP.ToString()}, " +
                     $"OTIntIP: {OwnershipTicketInternalIP.ToString()}, " +
                     $"OFlags: {OwnershipFlags}, " +
@@ -97,11 +157,23 @@ namespace Steam3Server.Others
         /// <param name="IsVacBanned"></param>
         /// <param name="TicketVersion"></param>
         /// <returns>Ticket as Bytes</returns>
-        public static byte[] CreateTicket(ulong SteamID, uint AppId, uint IP_Pub, uint IP_Priv, uint TicketFlags, List<uint> Licenses, List<DlcDetails> dlcs, ushort IsVacBanned = 0, uint TicketVersion = 4)
+        public static byte[] CreateTicket(TicketRequest request)
         {
-            MemoryStream ms = new();
+            using MemoryStream ms = new();
+            using BinaryWriter writer = new BinaryWriter(ms);
+            if (request.HasGCToken)
+            {
+
+            }
+            else
+            { 
+            
+            }
+            writer.Write(request.Version);
+
+            /*
             ms.Write(BitConverter.GetBytes(TicketVersion));
-            ms.Write(BitConverter.GetBytes(SteamID));
+            ms.Write(BitConverter.GetBytes(SteamID.ConvertToUInt64()));
             ms.Write(BitConverter.GetBytes(AppId));
             ms.Write(BitConverter.GetBytes(IP_Pub));
             ms.Write(BitConverter.GetBytes(IP_Priv));
@@ -141,6 +213,8 @@ namespace Steam3Server.Others
             var sig = BitConverter.ToString(hashSig);
             Bytes = Bytes.Concat(hashSig).ToArray();
             return Bytes;
+            */
+            return ms.ToArray();
         }
 
 
@@ -155,7 +229,7 @@ namespace Steam3Server.Others
             TicketStruct ticketStruct = new TicketStruct();
             ticketStruct.Licenses = new();
             ticketStruct.DLC = new();
-
+            ticketStruct.FullLen = ticket.Length;
             using var ms = new MemoryStream(ticket);
             using var ticketReader = new BinaryReader(ms, System.Text.Encoding.UTF8, true);
 
@@ -165,9 +239,10 @@ namespace Steam3Server.Others
                 if (ticketStruct.TicketLength == 20)
                 {
                     ticketStruct.HasGC = true;
-                    ticketStruct.GcToken = ticketReader.ReadUInt64().ToString();
+                    ticketStruct.GC = new();
+                    ticketStruct.GC.GcToken = ticketReader.ReadUInt64().ToString();
                     ticketReader.BaseStream.Seek(8, SeekOrigin.Current);
-                    ticketStruct.TokenGenerated = DateTimeOffset.FromUnixTimeSeconds(ticketReader.ReadUInt32()).DateTime;
+                    ticketStruct.GC.TokenGenerated = DateTimeOffset.FromUnixTimeSeconds(ticketReader.ReadUInt32()).DateTime;
 
                     uint two_four = ticketReader.ReadUInt32();
                     if (two_four != 24)
@@ -176,15 +251,17 @@ namespace Steam3Server.Others
                     }
 
                     ticketReader.BaseStream.Seek(8, SeekOrigin.Current);
-                    ticketStruct.SessionExternalIP = new IPAddress(ticketReader.ReadUInt32());
+                    ticketStruct.GC.SessionExternalIP = new IPAddress(ticketReader.ReadUInt32());
                     ticketReader.BaseStream.Seek(4, SeekOrigin.Current);
-                    ticketStruct.ClientConnectionTime = ticketReader.ReadUInt32();
-                    ticketStruct.ClientConnectionCount = ticketReader.ReadUInt32();
+                    ticketStruct.GC.ClientConnectionTime = ticketReader.ReadUInt32();
+                    ticketStruct.GC.ClientConnectionCount = ticketReader.ReadUInt32();
 
-                    var pos = ticketReader.ReadUInt32();
-                    if (pos + ms.Position != ms.Length)
+                    ticketStruct.GC.GCLen = ticketReader.ReadUInt32();
+                    int gcoffset = (int)ms.Position;
+                    Console.WriteLine(gcoffset);
+                    if (ticketStruct.GC.GCLen + gcoffset != ms.Length)
                     {
-                        throw new Exception("ms.Position != ms.Length | " + pos);
+                        throw new Exception("gcoffset != ms.Length | " + ticketStruct.GC.GCLen);
                     }
                 }
                 else
@@ -194,9 +271,10 @@ namespace Steam3Server.Others
                 }
 
                 int ownershipTicketOffset = (int)ms.Position;
-                int ownershipTicketLength = ticketReader.ReadInt32();
-                if (ownershipTicketOffset + ownershipTicketLength != ms.Length &&
-                    ownershipTicketOffset + ownershipTicketLength + 128 != ms.Length)
+                Console.WriteLine(ownershipTicketOffset);
+                ticketStruct.OwnershipLength = ticketReader.ReadInt32();
+                if (ownershipTicketOffset + ticketStruct.OwnershipLength != ms.Length &&
+                    ownershipTicketOffset + ticketStruct.OwnershipLength + 128 != ms.Length)
                 {
                     throw new Exception("ownershipTicketOffset + ownershipTicketLength");
                 }
