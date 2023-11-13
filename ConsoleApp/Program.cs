@@ -2,6 +2,7 @@
 using MainLib;
 using Newtonsoft.Json;
 using Steam.Messages.Base;
+using Steam3Kit.Types;
 using Steam3Kit.Utils;
 using Steam3Server;
 using Steam3Server.Others;
@@ -23,7 +24,25 @@ namespace ConsoleApp
 
             Console.WriteLine(ticketstruct.ToString());
             Console.WriteLine();
-           // Console.WriteLine(ticketstruct.ToCensored());
+            var steamID = new SteamID(666, Steam3Kit.EUniverse.Public, Steam3Kit.EAccountType.Individual);
+            var bytes = AppTickets.CreateTicket(new()
+            { 
+                AppId = ticketstruct.AppID,
+                DLC = ticketstruct.DLC,
+                SteamID = steamID,
+                HasGCToken = ticketstruct.HasGC,
+                GcToken = ticketstruct.HasGC ? ticketstruct.GC.GcToken : 0,
+                Licenses = ticketstruct.Licenses,
+                OwnershipFlags = ticketstruct.OwnershipFlags,
+                OwnershipTicketExternalIP = IPAddress.Parse("192.168.3.50"),
+                OwnershipTicketInternalIP = IPAddress.Parse("192.168.1.50"),
+                Version = ticketstruct.Version,
+            
+            });
+
+            Console.WriteLine(BitConverter.ToString(bytes).Replace("-",""));
+            Console.WriteLine(bytes.Length);
+            // Console.WriteLine(ticketstruct.ToCensored());
             /*
             Console.WriteLine();
 

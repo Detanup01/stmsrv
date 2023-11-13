@@ -1,8 +1,10 @@
 ﻿using Steam3Kit.Types;
 using Steam3Kit.Utils;
+using System.Collections.Generic;
 using System.Net;
 using System.Security.Cryptography;
 using UtilsLib;
+using static Steam3Server.Others.AppTickets;
 
 namespace Steam3Server.Others
 {
@@ -47,11 +49,14 @@ namespace Steam3Server.Others
             }
         }
 
+        public const int SigLen = 128;
+        public const uint GCWriteLen = 20;
+        public const uint SessionLen = 24;
         public class TicketRequest
         {
             // GC
             public bool HasGCToken { get; set; }
-            public string GcToken { get; set; }
+            public ulong GcToken { get; set; }
 
             public uint Version { get; set; }
             public SteamID SteamID { get; set; }
@@ -63,21 +68,21 @@ namespace Steam3Server.Others
             public List<DlcDetails> DLC { get; set; }
         }
 
-
-
         public class GCStruct
         {
-            public string GcToken { get; set; }
+            public ulong GcToken { get; set; }
+            public SteamID GCSteamID { get; set; }
             public DateTime TokenGenerated { get; set; }
+            public IPAddress SessionInternalIP { get; set; }
             public IPAddress SessionExternalIP { get; set; }
-            public uint ClientConnectionTime { get; set; }
-            public uint ClientConnectionCount { get; set; }
+            public uint SessionConnectionTime { get; set; }
+            public uint SessionConnectionCount { get; set; }
 
             public uint GCLen { get; set; }
 
             public override string ToString()
             {
-                return $"\nGCToken: {GcToken}, TokenGenerated: {TokenGenerated}, ExternalIP: {SessionExternalIP.ToString()}, CConnectionTime: {ClientConnectionTime}, CConnectionCount: {ClientConnectionCount}, GCLen: {GCLen}";
+                return $"\nGCToken: {GcToken}, TokenGenerated: {TokenGenerated}, InternalIP: {SessionInternalIP.ToString()}, ExternalIP: {SessionExternalIP.ToString()}, CConnectionTime: {SessionConnectionTime}, CConnectionCount: {SessionConnectionCount}, GCLen: {GCLen}";
             }
         }
 
@@ -144,79 +149,85 @@ namespace Steam3Server.Others
             }
         }
 
-        /// <summary>
-        /// Creating Ticket with Given Data
-        /// </summary>
-        /// <param name="SteamID"></param>
-        /// <param name="AppId"></param>
-        /// <param name="IP_Pub"></param>
-        /// <param name="IP_Priv"></param>
-        /// <param name="TicketFlags"></param>
-        /// <param name="Licenses"></param>
-        /// <param name="dlcs"></param>
-        /// <param name="IsVacBanned"></param>
-        /// <param name="TicketVersion"></param>
-        /// <returns>Ticket as Bytes</returns>
         public static byte[] CreateTicket(TicketRequest request)
         {
+            var ticketData = WriteTicketData(request);
+            var GCData = WriteGCData(request);
             using MemoryStream ms = new();
             using BinaryWriter writer = new BinaryWriter(ms);
             if (request.HasGCToken)
             {
-
+                writer.Write(GCWriteLen);
+                writer.Write(GCData);
             }
-            else
-            { 
-            
-            }
-            writer.Write(request.Version);
-
-            /*
-            ms.Write(BitConverter.GetBytes(TicketVersion));
-            ms.Write(BitConverter.GetBytes(SteamID.ConvertToUInt64()));
-            ms.Write(BitConverter.GetBytes(AppId));
-            ms.Write(BitConverter.GetBytes(IP_Pub));
-            ms.Write(BitConverter.GetBytes(IP_Priv));
-            ms.Write(BitConverter.GetBytes(TicketFlags));
-            var curTime = DateTime.UtcNow;
-            var endTime = curTime.AddDays(30);
-            uint curuint = (uint)DateUtils.DateTimeToUnixTime(curTime);
-            uint enduint = (uint)DateUtils.DateTimeToUnixTime(endTime);
-            ms.Write(BitConverter.GetBytes(curuint));
-            ms.Write(BitConverter.GetBytes(enduint));
-            ms.Write(BitConverter.GetBytes((ushort)Licenses.Count));
-            foreach (var lc in Licenses) 
-            {
-                ms.Write(BitConverter.GetBytes(lc));
-            }
-            ms.Write(BitConverter.GetBytes((ushort)dlcs.Count));
-            foreach (var dlc in dlcs)
-            {
-                ms.Write(BitConverter.GetBytes(dlc.AppId));
-                ms.Write(BitConverter.GetBytes((ushort)dlc.Licenses.Count));
-                foreach (var dlc_lic in dlc.Licenses)
-                {
-                    ms.Write(BitConverter.GetBytes(dlc_lic));
-                }
-            }
-            ms.Write(BitConverter.GetBytes(IsVacBanned));
-
-            var Bytes = ms.ToArray();
-            var l = Bytes.Length + 4; //    +4 Because it count itself!
-            Bytes = BitConverter.GetBytes((uint)l).Concat(Bytes).ToArray();
-            byte[] hashSig = Bytes;
+            writer.Write((uint)(ticketData.Length+4));
+            writer.Write(ticketData);
+            var retBytes = ms.ToArray();
+            byte[] hashSig = retBytes;
             using (RSA rsa = RSA.Create())
             {
                 rsa.ImportFromPem(File.ReadAllText("Keys/AppTicket.key"));
-                hashSig = rsa.SignData(hashSig, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                hashSig = rsa.SignData(hashSig, HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
             }
-            var sig = BitConverter.ToString(hashSig);
-            Bytes = Bytes.Concat(hashSig).ToArray();
-            return Bytes;
-            */
-            return ms.ToArray();
+            //Console.WriteLine(hashSig.Length);
+            retBytes = retBytes.Concat(hashSig).ToArray();
+            return retBytes;
         }
 
+        static byte[] WriteTicketData(TicketRequest request)
+        {
+            using MemoryStream memTicketData = new();
+            using BinaryWriter writer = new BinaryWriter(memTicketData);
+            writer.Write(request.Version);
+            writer.Write(request.SteamID.ConvertToUInt64());
+            writer.Write(request.AppId);
+            writer.Write((uint)request.OwnershipTicketExternalIP.Address);
+            writer.Write((uint)request.OwnershipTicketInternalIP.Address);
+            writer.Write(request.OwnershipFlags);
+            writer.Write((uint)DateTimeOffset.Now.ToUnixTimeSeconds());
+            writer.Write((uint)DateTimeOffset.Now.AddDays(100).ToUnixTimeSeconds());
+            writer.Write((ushort)request.Licenses.Count);
+            foreach (var item in request.Licenses)
+            {
+                writer.Write(item);
+            }
+            writer.Write((ushort)request.DLC.Count);
+            foreach (var item in request.DLC)
+            {
+                writer.Write(item.AppId);
+                writer.Write((ushort)item.Licenses.Count);
+                foreach (var item_lic in item.Licenses)
+                {
+                    writer.Write(item_lic);
+                }
+            }
+            writer.Write((ushort)0);
+            var TicketData = memTicketData.ToArray();        
+            //Console.WriteLine(TicketData.Length);
+            return TicketData;
+        }
+
+        static byte[] WriteGCData(TicketRequest request)
+        {
+            using MemoryStream memGCData = new();
+            using BinaryWriter writer = new BinaryWriter(memGCData);
+
+            writer.Write(request.GcToken);
+            writer.Write(request.SteamID.ConvertToUInt64());
+            writer.Write((uint)DateTimeOffset.Now.ToUnixTimeSeconds());
+            writer.Write(SessionLen);
+            writer.Write((uint)1); 
+            writer.Write((uint)2);
+            writer.Write((uint)request.OwnershipTicketExternalIP.Address);
+            writer.Write((uint)request.OwnershipTicketInternalIP.Address);
+            writer.Write((uint)1000);
+            writer.Write((uint)1);
+            //Console.WriteLine("SigLen + Pos: " + (SigLen + writer.BaseStream.Position + 2));
+            writer.Write((uint)(SigLen + writer.BaseStream.Position + 2));
+            var GCData = memGCData.ToArray();
+            //Console.WriteLine("GCDL: " + GCData.Length);
+            return GCData;
+        }
 
         /// <summary>
         /// Getting Ticket Structure from ByteArray
@@ -240,25 +251,27 @@ namespace Steam3Server.Others
                 {
                     ticketStruct.HasGC = true;
                     ticketStruct.GC = new();
-                    ticketStruct.GC.GcToken = ticketReader.ReadUInt64().ToString();
-                    ticketReader.BaseStream.Seek(8, SeekOrigin.Current);
+                    ticketStruct.GC.GcToken = ticketReader.ReadUInt64();
+                    ticketStruct.GC.GCSteamID = new SteamID(ticketReader.ReadUInt64());
                     ticketStruct.GC.TokenGenerated = DateTimeOffset.FromUnixTimeSeconds(ticketReader.ReadUInt32()).DateTime;
-
+                    
                     uint two_four = ticketReader.ReadUInt32();
                     if (two_four != 24)
                     {
                         throw new Exception("!24 | " + two_four);
                     }
-
+                    //Console.WriteLine(ticketReader.ReadUInt32()); //always 1
+                    //Console.WriteLine(ticketReader.ReadUInt32());   //always 2
                     ticketReader.BaseStream.Seek(8, SeekOrigin.Current);
                     ticketStruct.GC.SessionExternalIP = new IPAddress(ticketReader.ReadUInt32());
-                    ticketReader.BaseStream.Seek(4, SeekOrigin.Current);
-                    ticketStruct.GC.ClientConnectionTime = ticketReader.ReadUInt32();
-                    ticketStruct.GC.ClientConnectionCount = ticketReader.ReadUInt32();
+                    ticketStruct.GC.SessionInternalIP = new IPAddress(ticketReader.ReadUInt32());
+                    //ticketReader.BaseStream.Seek(4, SeekOrigin.Current);
+                    ticketStruct.GC.SessionConnectionTime = ticketReader.ReadUInt32();
+                    ticketStruct.GC.SessionConnectionCount = ticketReader.ReadUInt32();
 
                     ticketStruct.GC.GCLen = ticketReader.ReadUInt32();
                     int gcoffset = (int)ms.Position;
-                    Console.WriteLine(gcoffset);
+                    //Console.WriteLine(gcoffset);
                     if (ticketStruct.GC.GCLen + gcoffset != ms.Length)
                     {
                         throw new Exception("gcoffset != ms.Length | " + ticketStruct.GC.GCLen);
@@ -271,7 +284,7 @@ namespace Steam3Server.Others
                 }
 
                 int ownershipTicketOffset = (int)ms.Position;
-                Console.WriteLine(ownershipTicketOffset);
+                //Console.WriteLine(ownershipTicketOffset);
                 ticketStruct.OwnershipLength = ticketReader.ReadInt32();
                 if (ownershipTicketOffset + ticketStruct.OwnershipLength != ms.Length &&
                     ownershipTicketOffset + ticketStruct.OwnershipLength + 128 != ms.Length)
@@ -294,8 +307,6 @@ namespace Steam3Server.Others
                 {
                     ticketStruct.Licenses.Add(ticketReader.ReadUInt32());
                 }
-
-                
 
                 int dlcCount = ticketReader.ReadUInt16();
                 for (int i = 0; i < dlcCount; i++)
