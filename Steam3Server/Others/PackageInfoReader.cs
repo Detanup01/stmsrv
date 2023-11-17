@@ -46,6 +46,9 @@ namespace Steam3Server.Others
                     break;
                 }
 
+                if (subid != 0)
+                    break;
+
                 var package = new JPackage
                 {
                     SubID = subid,

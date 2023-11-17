@@ -22,8 +22,6 @@ namespace Steam3Server.CMServer.CMPackets
     {
         public static void Response(PacketClientMsgProtobuf clientMsgProtobuf, WSSSessionBase sessionBase)
         {
-            Debug.PWDebug("Sending CMLoginRSP");
-            var rsp = new byte[] { };
             var logon = CMsgClientLogon.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
 
 
@@ -36,8 +34,7 @@ namespace Steam3Server.CMServer.CMPackets
             protoRSP.Body.CountAuthedComputers = 1;
             protoRSP.Body.IpCountry = "US";
             protoRSP.Body.TwoFactorState = 0;
-            rsp = protoRSP.Serialize();
-            sessionBase.SendBinaryAsync(rsp);
+            sessionBase.SendBinaryAsync(protoRSP.Serialize());
 
             //  Sending EmailAddrInfo
             var protoRSP2 = new ClientMsgProtobuf<CMsgClientEmailAddrInfo>(EMsg.ClientEmailAddrInfo);
@@ -47,8 +44,7 @@ namespace Steam3Server.CMServer.CMPackets
             protoRSP2.Body.EmailIsValidated = true;
             protoRSP2.Body.CredentialChangeRequiresCode = true;
             protoRSP2.Body.PasswordOrSecretqaChangeRequiresCode = true;
-            rsp = protoRSP2.Serialize();
-            sessionBase.SendBinaryAsync(rsp);
+            sessionBase.SendBinaryAsync(protoRSP2.Serialize());
 
 
             //  Sending FriendsList
@@ -66,8 +62,7 @@ namespace Steam3Server.CMServer.CMPackets
                 }
             };
             protoRSP3.Body.Friends.AddRange(friends);
-            rsp = protoRSP3.Serialize();
-            sessionBase.SendBinaryAsync(rsp);
+            sessionBase.SendBinaryAsync(protoRSP3.Serialize());
 
 
             //  Sending ClientPlayerNicknameList
@@ -76,8 +71,7 @@ namespace Steam3Server.CMServer.CMPackets
             protoRSP4.Header.Proto.Eresult = (int)EResult.OK;
             protoRSP4.Body.Removal = false;
             protoRSP4.Body.Incremental = false;
-            rsp = protoRSP4.Serialize();
-            sessionBase.SendBinaryAsync(rsp);
+            sessionBase.SendBinaryAsync(protoRSP4.Serialize());
 
             //  Sending ClientLicenseList
             var protoRSP5 = new ClientMsgProtobuf<CMsgClientLicenseList>(EMsg.ClientLicenseList);
@@ -97,8 +91,7 @@ namespace Steam3Server.CMServer.CMPackets
                 PurchaseCountryCode = "US",
                 ChangeNumber = 5676048,
             });
-            rsp = protoRSP5.Serialize();
-            sessionBase.SendBinaryAsync(rsp);
+            sessionBase.SendBinaryAsync(protoRSP5.Serialize());
         }
     }
 }

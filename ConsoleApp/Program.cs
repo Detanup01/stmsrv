@@ -1,14 +1,4 @@
-﻿using Google.Protobuf;
-using MainLib;
-using Newtonsoft.Json;
-using Steam.Messages.Base;
-using Steam3Kit.Types;
-using Steam3Kit.Utils;
-using Steam3Server;
-using Steam3Server.Others;
-using System.Net;
-using System.Security.Cryptography;
-using ValveKeyValue;
+﻿using Steam3Server;
 
 namespace ConsoleApp
 {
@@ -16,6 +6,7 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
+            /*
             string x = File.ReadAllText("ticket.txt");
             var bytes_long = Enumerable.Range(0, x.Length / 2)
    .Select(i => Convert.ToByte(x.Substring(i * 2, 2), 16))
@@ -42,6 +33,7 @@ namespace ConsoleApp
 
             Console.WriteLine(BitConverter.ToString(bytes).Replace("-",""));
             Console.WriteLine(bytes.Length);
+            */
             // Console.WriteLine(ticketstruct.ToCensored());
             /*
             Console.WriteLine();
@@ -56,7 +48,7 @@ namespace ConsoleApp
             ticketstruct = AppTickets.GetTicket(Ticketbytes);
             AppTickets.PrintTicket(ticketstruct);
             */
-            //ServerCore.Start();
+            ServerCore.Start();
             Console.ReadLine();
         }
     }

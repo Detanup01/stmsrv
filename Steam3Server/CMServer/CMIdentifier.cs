@@ -7,7 +7,7 @@ namespace Steam3Server.CMServer
     {
         public static void Identifier(object CMObject, string FromDestination)
         {
-            Debug.WriteDebug(FromDestination, "CMIdentifier");
+            //Debug.WriteDebug(FromDestination, "CMIdentifier");
             switch (FromDestination)
             {
                 case "UDP":

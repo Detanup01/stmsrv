@@ -10,8 +10,6 @@ namespace Steam3Server.CMServer.CMPackets
     {
         public static void Response(PacketClientMsgProtobuf clientMsgProtobuf, WSSSessionBase sessionBase)
         {
-            Debug.PWDebug("Sending CMSendServersAvailable");
-            var rsp = new byte[] { };
             var protoServerAvailable = new ClientMsgProtobuf<CMsgClientServersAvailable>(EMsg.ClientServersAvailable);
             protoServerAvailable.ParseHeader(clientMsgProtobuf);
             protoServerAvailable.Header.Proto.Eresult = (int)EResult.OK;
@@ -84,9 +82,7 @@ namespace Steam3Server.CMServer.CMPackets
             };
             protoServerAvailable.Body.ServerTypesAvailable.AddRange(servers);
             protoServerAvailable.Body.ServerTypeForAuthServices = 58;   //idk what is this
-            //Debug.PWDebug(protoServerAvailable.Body.ToString());
-            rsp = protoServerAvailable.Serialize();
-            sessionBase.SendBinaryAsync(rsp);
+            sessionBase.SendBinaryAsync(protoServerAvailable.Serialize());
         }
     }
 }

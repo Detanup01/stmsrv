@@ -11,9 +11,7 @@ namespace Steam3Server.CMServer.CMPackets
     {
         public static void Response(PacketClientMsgProtobuf clientMsgProtobuf, WSSSessionBase sessionBase)
         {
-            Debug.PWDebug("Sending CMLoginRSP");
             var logon = CMsgClientLogon.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
-            Debug.PWDebug(logon.ToString());
             var protoRSP = new ClientMsgProtobuf<CMsgClientLogonResponse>(EMsg.ClientLogOnResponse);
             protoRSP.ParseHeader(clientMsgProtobuf);
             protoRSP.Header.Proto.Eresult = (int)EResult.OK;
@@ -37,7 +35,6 @@ namespace Steam3Server.CMServer.CMPackets
                 IpCountryCode = "US",
                 VanityUrl = ""
             };
-            //Debug.PWDebug(protoRSP.Body.ToString());
             sessionBase.SendBinaryAsync(protoRSP.Serialize());
         }
     }

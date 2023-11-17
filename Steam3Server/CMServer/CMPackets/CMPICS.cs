@@ -4,6 +4,7 @@ using Steam.Messages.ClientServer.Appinfo;
 using Steam3Server.SQL;
 using Google.Protobuf;
 using Steam3Server.Servers;
+using UtilsLib;
 
 namespace Steam3Server.CMServer.CMPackets
 {
@@ -35,8 +36,8 @@ namespace Steam3Server.CMServer.CMPackets
 
         static void ProductInfo(PacketClientMsgProtobuf clientMsgProtobuf, WSSSessionBase sessionBase)
         {
-            var rsp = new byte[] { };
             var proto = CMsgClientPICSProductInfoRequest.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
+            Debug.PWDebug(proto.ToString());
             var protoRSP = new ClientMsgProtobuf<CMsgClientPICSProductInfoResponse>(EMsg.ClientPICSProductInfoResponse);
             protoRSP.ParseHeader(clientMsgProtobuf);
             protoRSP.Header.Proto.Eresult = (int)EResult.OK;
@@ -59,7 +60,7 @@ namespace Steam3Server.CMServer.CMPackets
                         ChangeNumber = japp.ChangeNumber,
                         Sha = ByteString.CopyFrom(japp.Hash),
                         Size = (uint)japp.DataByte.Length,
-                        Buffer = ByteString.CopyFrom(japp.DataByte),
+                        //Buffer = ByteString.CopyFrom(japp.DataByte),
                         MissingToken = false,
                         OnlyPublic = false
                     });
@@ -86,7 +87,7 @@ namespace Steam3Server.CMServer.CMPackets
                         Sha = ByteString.CopyFrom(jpkg.Hash),
                         Size = (uint)jpkg.DataBytes.Length,
                         Packageid = item.Packageid,
-                        Buffer = ByteString.CopyFrom(jpkg.DataBytes),
+                        //Buffer = ByteString.CopyFrom(jpkg.DataBytes),
                         MissingToken = false
                     });
                 }
@@ -95,24 +96,26 @@ namespace Steam3Server.CMServer.CMPackets
             protoRSP.Body.Packages.AddRange(pkgInfos);
             protoRSP.Body.HttpMinSize = 4096;
             protoRSP.Body.HttpHost = "clientconfig.local.steamstatic.com";
-            rsp = protoRSP.Serialize();
-            sessionBase.SendBinaryAsync(rsp);
+            protoRSP.Body.ResponsePending = false;
+            Debug.PWDebug(protoRSP.Body.ToString());
+            sessionBase.SendBinaryAsync(protoRSP.Serialize());
         }
 
         static void ChangesSince(PacketClientMsgProtobuf clientMsgProtobuf, WSSSessionBase sessionBase)
         {
-            var rsp = new byte[] { };
             var proto = CMsgClientPICSChangesSinceRequest.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
             var protoRSP = new ClientMsgProtobuf<CMsgClientPICSChangesSinceResponse>(EMsg.ClientPICSChangesSinceResponse);
             protoRSP.ParseHeader(clientMsgProtobuf);
             List<CMsgClientPICSChangesSinceResponse.Types.AppChange> appChanges = new();
             List<CMsgClientPICSChangesSinceResponse.Types.PackageChange> packageChanges = new();
             uint since = proto.SinceChangeNumber;
+            Debug.PWDebug("since: " + since, "CMPICS");
             if (proto.SendAppInfoChanges)
             {
                 var appinfo = DBAppInfo.GetAppInfoCache();
                 foreach (var appid in appinfo.Apps)
                 {
+                    Debug.PWDebug("appid: " + appid, "CMPICS");
                     var app = DBAppInfo.GetApp(appid);
                     if (app != null && app.ChangeNumber > since)
                     {
@@ -129,6 +132,7 @@ namespace Steam3Server.CMServer.CMPackets
                 var packageInfo = DBPackageInfo.GetPackageInfoCache();
                 foreach (var subid in packageInfo.Packages)
                 {
+                    Debug.PWDebug("Subid: " + subid, "CMPICS");
                     var sub = DBPackageInfo.GetPackages(subid);
                     if (sub != null && sub.ChangeNumber > since)
                     {
@@ -140,13 +144,20 @@ namespace Steam3Server.CMServer.CMPackets
                     }
                 }
             }
-            rsp = protoRSP.Serialize();
-            sessionBase.SendBinaryAsync(rsp);
+            Debug.PWDebug("All done","CMPICS");
+            protoRSP.Body = new()
+            { 
+                AppChanges = { appChanges },
+                CurrentChangeNumber = 19573493,
+                PackageChanges = { packageChanges },
+                SinceChangeNumber = proto.SinceChangeNumber
+            };
+            Debug.PWDebug(protoRSP.Body.ToString());
+            sessionBase.SendBinaryAsync(protoRSP.Serialize());
         }
 
         static void AccessToken(PacketClientMsgProtobuf clientMsgProtobuf, WSSSessionBase sessionBase)
         {
-            var rsp = new byte[] { };
             var proto = CMsgClientPICSAccessTokenRequest.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
             var protoRSP = new ClientMsgProtobuf<CMsgClientPICSAccessTokenResponse>(EMsg.ClientPICSAccessTokenResponse);
             protoRSP.ParseHeader(clientMsgProtobuf);
@@ -191,8 +202,7 @@ namespace Steam3Server.CMServer.CMPackets
             }
             protoRSP.Body.PackageAccessTokens.AddRange(packageTokens);
             protoRSP.Body.PackageDeniedTokens.AddRange(denied);
-            rsp = protoRSP.Serialize();
-            sessionBase.SendBinaryAsync(rsp);
+            sessionBase.SendBinaryAsync(protoRSP.Serialize());
         }
     }
 }

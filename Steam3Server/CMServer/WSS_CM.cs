@@ -18,7 +18,6 @@ namespace Steam3Server.CMServer
             var rsp = new byte[] { };
             uint rawEMsg = BitConverter.ToUInt32(incoming.Item1, 0);
             EMsg eMsg = MsgUtil.GetMsg(rawEMsg);
-            Debug.PWDebug("EMSG: " + eMsg);
             switch (eMsg)
             {
                 // certain message types are always MsgHdr
@@ -59,9 +58,8 @@ namespace Steam3Server.CMServer
             //todo: send ClientServersAvailable with ClientLogOnResponse
             //todo: should save our ID to not send both data when loggin in.
 
-            var rsp = new byte[] { };
-            Debug.WriteDebug($"IsProto: {clientMsgProtobuf.IsProto}\nTargetJobID: {clientMsgProtobuf.TargetJobID}\nSourceJobID: {clientMsgProtobuf.SourceJobID}\nMsgType: {clientMsgProtobuf.MsgType}", "WSS_CM.ProtoSwitcher");
-            Debug.PWDebug(clientMsgProtobuf.Header.ToString());
+            //Debug.WriteDebug($"IsProto: {clientMsgProtobuf.IsProto}\nTargetJobID: {clientMsgProtobuf.TargetJobID}\nSourceJobID: {clientMsgProtobuf.SourceJobID}\nMsgType: {clientMsgProtobuf.MsgType}", "WSS_CM.ProtoSwitcher");
+            Debug.PWDebug(clientMsgProtobuf.MsgType.ToString());
             switch (clientMsgProtobuf.MsgType)
             {
                 //  Logins
@@ -84,7 +82,7 @@ namespace Steam3Server.CMServer
                 case EMsg.ClientHeartBeat:
                     {
                         var protobuf = CMsgClientHeartBeat.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
-                        //if (protobuf.SendReply)
+                        if (protobuf.HasSendReply && protobuf.SendReply)
                         {
                             var protoRSP = new ClientMsgProtobuf<CMsgClientHeartBeat>(EMsg.ClientHeartBeat);
                             protoRSP.ParseHeader(clientMsgProtobuf);
@@ -99,7 +97,7 @@ namespace Steam3Server.CMServer
                     }
                 case EMsg.ServiceMethodCallFromClient:
                     {
-                        Debug.PWDebug("ServiceMethodCallFromClient");
+                        //Debug.PWDebug("ServiceMethodCallFromClient");
                         CMServiceIdentifier.Identify(clientMsgProtobuf, sessionBase);
                         break;
                     }
@@ -111,8 +109,26 @@ namespace Steam3Server.CMServer
                         break;
                     }
                 // Other
+                case EMsg.ClientUFSGetFileListForApp:
+                    {
+                        CMUFS.ClientUFSGetFileListForApp(clientMsgProtobuf, sessionBase);
+                        break;
+                    }
+                case EMsg.ClientUCMEnumerateUserSubscribedFiles:
+                case EMsg.ClientUCMEnumeratePublishedFilesByUserAction:
+                    {
+                        CMUCM.ClientUCMEnumerateUserSubscribedFiles(clientMsgProtobuf, sessionBase);
+                        break;
+                    }
+                case EMsg.ClientCurrentUIMode:
+                case EMsg.ClientConnectionStats:
+                    // Here we could track each thing of these, but we dont want currently.
+                    break;
+                case EMsg.ClientUseLocalDeviceAuthorizations:
+                    CMLocalDeviceAuth.Response(clientMsgProtobuf, sessionBase);
+                    break;
                 default:
-                    Debug.PWDebug(clientMsgProtobuf.MsgType.ToString());
+                    Debug.PWDebug("Opps: " + clientMsgProtobuf.MsgType.ToString());
                     break;
             }
         }

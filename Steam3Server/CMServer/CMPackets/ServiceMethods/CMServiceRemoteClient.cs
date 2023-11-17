@@ -14,7 +14,7 @@ namespace Steam3Server.CMServer.CMPackets.ServiceMethods
             {
                 case "NotifyOnline":
                     var notif  = CRemoteClient_Online_Notification.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
-                    Debug.PWDebug("NotifyOnline! " + notif.ToString());
+                    //Debug.PWDebug("NotifyOnline! " + notif.ToString());
                     break;
                 default:
                     break;

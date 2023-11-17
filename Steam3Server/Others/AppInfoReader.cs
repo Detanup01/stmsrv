@@ -1,6 +1,9 @@
 ﻿using Steam3Kit;
 using Steam3Server.SQL;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Text;
 using ValveKeyValue;
 
 namespace Steam3Server.Others
@@ -51,10 +54,10 @@ namespace Steam3Server.Others
                 {
                     break;
                 }
-
+                var size = reader.ReadUInt32();
                 if (AppListToGet.Contains(appid))
                 {
-                    var size = reader.ReadUInt32();
+                    //UtilsLib.Debug.PWDebug("AppId in list, getting it: " + appid);
                     var app = new JApp
                     {
                         AppID = appid,
@@ -64,35 +67,19 @@ namespace Steam3Server.Others
                         Hash = reader.ReadBytes(20),
                         ChangeNumber = reader.ReadUInt32(),
                     };
-                    Apps.Add(appid);
                     if (magic == Magic28)
                     {
                         app.BinaryDataHash = reader.ReadBytes(20);
                     }
-
-                    var kvData = deserializer.Deserialize(input);
-                    MemoryStream ms = new();
-                    ms = new();
-                    deserializer.Serialize(ms, kvData);
-                    ms.Dispose();
-                    app.DataByte = ms.ToArray();
+                    Apps.Add(appid);
+                    app.DataByte = ReadEntriesBin(reader);
                     DBAppInfo.AddApp(app);
                 }
                 else
                 {
-                    //Skipping it. Can be made smaller to just read X bytes (might do it later)
-                    //  4 + 4 + 4 + 8 + 20 + 4 + (20)
-                    reader.ReadUInt32();
-                    reader.ReadUInt32();
-                    reader.ReadUInt32();
-                    reader.ReadUInt64();
-                    reader.ReadBytes(20);
-                    reader.ReadUInt32();
-                    if (magic == Magic28)
-                    {
-                        reader.ReadBytes(20);
-                    }
+                    reader.BaseStream.Seek(size, SeekOrigin.Current);
                 }
+                
 
             } while (true);
 
@@ -111,6 +98,68 @@ namespace Steam3Server.Others
         public static DateTime DateTimeFromUnixTime(uint unixTime)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(unixTime);
+        }
+       
+
+        static byte[] ReadEntriesBin(BinaryReader _binaryReader)
+        {
+            List<byte> bytes = new();
+            while (true)
+            {
+                byte type = _binaryReader.ReadByte();
+                bytes.Add(type);
+                if (type == 0x08)
+                {
+                    break;
+                }
+
+                bytes.AddRange(ReadStringBin(_binaryReader));
+
+                switch (type)
+                {
+                    case 0x00:
+                        bytes.AddRange(ReadEntriesBin(_binaryReader));
+
+                        break;
+                    case 0x01:
+                        bytes.AddRange(ReadStringBin(_binaryReader));
+
+                        break;
+                    case 0x02:
+                        bytes.AddRange(_binaryReader.ReadBytes(4));
+                        break;
+                    default:
+
+                        throw new ArgumentOutOfRangeException(string.Format(CultureInfo.InvariantCulture, "Unknown entry type '{0}'", type));
+                }
+            }
+            return bytes.ToArray();
+        }
+
+        static byte[] ReadStringBin(BinaryReader _binaryReader)
+        {
+            List<byte> bytes = new List<byte>();
+
+            try
+            {
+                bool stringDone = false;
+                do
+                {
+                    byte b = _binaryReader.ReadByte();
+                    bytes.Add(b);
+                    if (b == 0)
+                    {
+                        stringDone = true;
+                    }
+                } while (!stringDone);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+
+                throw;
+            }
+            return bytes.ToArray();
         }
     }
 }

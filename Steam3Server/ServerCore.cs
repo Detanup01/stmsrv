@@ -23,6 +23,7 @@ namespace Steam3Server
             {
                 Console.WriteLine("Reading AppInfo... Might take some time");
                 AppInfoReader.Read("Content/appinfo.vdf");
+                Console.WriteLine(JsonConvert.SerializeObject(AppInfoReader.Items));
             }
             if (File.Exists("Content/packageinfo.vdf"))
             {

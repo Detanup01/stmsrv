@@ -1,3 +1,4 @@
+openssl genpkey -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out OfflineKey.key
 openssl genpkey -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out global.key
 openssl genpkey -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:1024 -out AppTicket.key
 openssl req -new -nodes -key global.key -config global.conf -nameopt utf8 -utf8 -out global.csr

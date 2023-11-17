@@ -9,7 +9,7 @@ using Google.Protobuf;
 
 namespace Steam3Kit.Utils
 {
-    static class Utils
+    public static class Utils
     {
         public static string EncodeHexString(byte[] input)
         {
