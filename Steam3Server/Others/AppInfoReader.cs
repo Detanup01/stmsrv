@@ -1,4 +1,6 @@
-﻿using Steam3Kit;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Steam3Kit;
 using Steam3Server.SQL;
 using System.Diagnostics;
 using System.Globalization;
@@ -10,6 +12,7 @@ namespace Steam3Server.Others
 {
     public class AppInfoReader
     {
+        public static AppInfoNode App7Node;
         //  Reason to limit:    AppInfo vdf is big, and we have a small db. Import AppIds that only we want in first place, then we can expand it later. AKA Extras or something.
         private static List<uint> AppListToGet = new List<uint>()
                 {
@@ -72,7 +75,18 @@ namespace Steam3Server.Others
                         app.BinaryDataHash = reader.ReadBytes(20);
                     }
                     Apps.Add(appid);
-                    app.DataByte = ReadEntriesBin(reader);
+
+                    app.DataByte = reader.ReadBytes(((int)size-4-4-8-20-4-20));
+                    /*
+                    var x = AppInfoNodeExt.ReadEntries(reader);
+                    if (app.AppID == 480)
+                        App7Node = x;
+                    var test = AppInfoNodeKV.ParseToBin(x);
+                    var vdf = AppInfoNodeKV.ParseToVDF(x);
+                    Console.WriteLine(vdf);
+                    app.DataByte = test;//Encoding.UTF8.GetBytes(vdf);
+                    //app.DataByte = ReadEntriesBin(reader);
+                    */
                     DBAppInfo.AddApp(app);
                 }
                 else

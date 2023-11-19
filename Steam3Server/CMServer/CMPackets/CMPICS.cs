@@ -54,7 +54,7 @@ namespace Steam3Server.CMServer.CMPackets
                 }
                 else
                 {
-                    appInfos.Add(new()
+                    CMsgClientPICSProductInfoResponse.Types.AppInfo app = new()
                     {
                         Appid = item.Appid,
                         ChangeNumber = japp.ChangeNumber,
@@ -63,7 +63,12 @@ namespace Steam3Server.CMServer.CMPackets
                         //Buffer = ByteString.CopyFrom(japp.DataByte),
                         MissingToken = false,
                         OnlyPublic = false
-                    });
+                    };
+                    if (proto.MetaDataOnly)
+                    {
+                        app.Buffer = ByteString.CopyFrom(japp.DataByte);
+                    }
+                    appInfos.Add(app);
                 }
             }
             protoRSP.Body.UnknownAppids.AddRange(UnknownApps);
@@ -81,7 +86,7 @@ namespace Steam3Server.CMServer.CMPackets
                 }
                 else
                 {
-                    pkgInfos.Add(new()
+                    CMsgClientPICSProductInfoResponse.Types.PackageInfo package = new()
                     { 
                         ChangeNumber = jpkg.ChangeNumber,
                         Sha = ByteString.CopyFrom(jpkg.Hash),
@@ -89,7 +94,12 @@ namespace Steam3Server.CMServer.CMPackets
                         Packageid = item.Packageid,
                         //Buffer = ByteString.CopyFrom(jpkg.DataBytes),
                         MissingToken = false
-                    });
+                    }; 
+                    if (proto.MetaDataOnly)
+                    {
+                        package.Buffer = ByteString.CopyFrom(jpkg.DataBytes);
+                    }
+                    pkgInfos.Add(package);
                 }
             }
             protoRSP.Body.UnknownPackageids.AddRange(UnkownPKGs);
@@ -97,7 +107,7 @@ namespace Steam3Server.CMServer.CMPackets
             protoRSP.Body.HttpMinSize = 4096;
             protoRSP.Body.HttpHost = "clientconfig.local.steamstatic.com";
             protoRSP.Body.ResponsePending = false;
-            Debug.PWDebug(protoRSP.Body.ToString());
+            //Debug.PWDebug(protoRSP.Body.ToString());
             sessionBase.SendBinaryAsync(protoRSP.Serialize());
         }
 
@@ -109,13 +119,11 @@ namespace Steam3Server.CMServer.CMPackets
             List<CMsgClientPICSChangesSinceResponse.Types.AppChange> appChanges = new();
             List<CMsgClientPICSChangesSinceResponse.Types.PackageChange> packageChanges = new();
             uint since = proto.SinceChangeNumber;
-            Debug.PWDebug("since: " + since, "CMPICS");
             if (proto.SendAppInfoChanges)
             {
                 var appinfo = DBAppInfo.GetAppInfoCache();
                 foreach (var appid in appinfo.Apps)
                 {
-                    Debug.PWDebug("appid: " + appid, "CMPICS");
                     var app = DBAppInfo.GetApp(appid);
                     if (app != null && app.ChangeNumber > since)
                     {
@@ -132,7 +140,6 @@ namespace Steam3Server.CMServer.CMPackets
                 var packageInfo = DBPackageInfo.GetPackageInfoCache();
                 foreach (var subid in packageInfo.Packages)
                 {
-                    Debug.PWDebug("Subid: " + subid, "CMPICS");
                     var sub = DBPackageInfo.GetPackages(subid);
                     if (sub != null && sub.ChangeNumber > since)
                     {
@@ -144,7 +151,6 @@ namespace Steam3Server.CMServer.CMPackets
                     }
                 }
             }
-            Debug.PWDebug("All done","CMPICS");
             protoRSP.Body = new()
             { 
                 AppChanges = { appChanges },
@@ -152,7 +158,7 @@ namespace Steam3Server.CMServer.CMPackets
                 PackageChanges = { packageChanges },
                 SinceChangeNumber = proto.SinceChangeNumber
             };
-            Debug.PWDebug(protoRSP.Body.ToString());
+            //Debug.PWDebug(protoRSP.Body.ToString());
             sessionBase.SendBinaryAsync(protoRSP.Serialize());
         }
 

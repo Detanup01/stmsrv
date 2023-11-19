@@ -11,6 +11,8 @@ using Steam3Server.Others;
 using Steam3Server.SQL;
 using UtilsLib;
 using ValveKeyValue;
+using Steam3Server.HTTPServer.Responses;
+using Steam3Server.HTTPServer;
 
 namespace Steam3Server
 {
@@ -23,7 +25,7 @@ namespace Steam3Server
             {
                 Console.WriteLine("Reading AppInfo... Might take some time");
                 AppInfoReader.Read("Content/appinfo.vdf");
-                Console.WriteLine(JsonConvert.SerializeObject(AppInfoReader.Items));
+                //Console.WriteLine(JsonConvert.SerializeObject(AppInfoReader.Items));
             }
             if (File.Exists("Content/packageinfo.vdf"))
             {
@@ -95,28 +97,12 @@ namespace Steam3Server
 
         private static void Serverhttp_EventDisconnected(object? sender, HTTPServerSession e)
         {
-            e.ReceivedRequest -= SteamWEBSession_ReceivedRequest;
+            e.ReceivedRequest -= WEBSessionRoute.SteamWEBSession_ReceivedRequest;
         }
 
         private static void Serverhttp_EventConnected(object? sender, HTTPServerSession e)
         {
-            e.ReceivedRequest += SteamWEBSession_ReceivedRequest;
-        }
-
-        private static void SteamWEBSession_ReceivedRequest(object? sender, (HttpRequest request, HTTPServerSession session) e)
-        {
-            //Debug.PWDebug("SteamWEBSession_ReceivedRequest ovverride?");
-            Debug.WriteDebug(e.request.Url, "SteamWEBSession_ReceivedRequest");
-            if (e.request.Url == "/server-status")
-            {
-                e.session.SendResponseAsync(e.session.Response.MakeErrorResponse());
-            }
-            else
-            {
-                e.session.SendResponseAsync(e.session.Response.MakeOkResponse());
-
-            }
-
+            e.ReceivedRequest += WEBSessionRoute.SteamWEBSession_ReceivedRequest;
         }
 
         public static X509Certificate GetCert()

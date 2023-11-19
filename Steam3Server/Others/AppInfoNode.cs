@@ -30,6 +30,13 @@ namespace Steam3Server.Others
         public AppInfoNode(string value)
         {
             Value = value;
+            IsInt = false;
+        }
+
+        public AppInfoNode(string value, bool isInt)
+        {
+            Value = value;
+            IsInt = isInt;
         }
 
         #endregion
@@ -45,6 +52,9 @@ namespace Steam3Server.Others
         ///     Data of the AppInfo node.
         /// </summary>
         public string Value { get; set; }
+
+
+        public bool IsInt { get; set; }
 
         #endregion
 
@@ -70,6 +80,18 @@ namespace Steam3Server.Others
 
     public static class AppInfoNodeExt
     {
+        public static AppInfoNode ReadEntries(this byte[] bytes)
+        { 
+            MemoryStream memory = new(bytes);
+            BinaryReader binaryReader = new(memory, Encoding.UTF8, true);
+            var entries = ReadEntries(binaryReader);
+            binaryReader.Close();
+            binaryReader.Dispose();
+            memory.Close();
+            memory.Dispose();
+            return entries;
+        }
+
         public static AppInfoNode ReadEntries(this BinaryReader _binaryReader)
         {
             AppInfoNode result = new AppInfoNode();
@@ -81,7 +103,6 @@ namespace Steam3Server.Others
                 {
                     break;
                 }
-
                 string key = _binaryReader.InfoReadString();
 
                 switch (type)
@@ -95,12 +116,12 @@ namespace Steam3Server.Others
 
                         break;
                     case 0x02:
-                        result[key] = new AppInfoNode(_binaryReader.ReadUInt32().ToString(CultureInfo.InvariantCulture));
+                        result[key] = new AppInfoNode(_binaryReader.ReadUInt32().ToString(), true);
 
                         break;
                     default:
 
-                        throw new ArgumentOutOfRangeException(string.Format(CultureInfo.InvariantCulture, "Unknown entry type '{0}'", type));
+                        throw new ArgumentOutOfRangeException("Unknown entry type: "+ type.ToString("X2"));
                 }
             }
 
@@ -132,7 +153,6 @@ namespace Steam3Server.Others
 
                 throw;
             }
-
             return Encoding.UTF8.GetString(bytes.ToArray());
         }
     }

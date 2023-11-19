@@ -1,4 +1,12 @@
-﻿using Steam3Server;
+﻿using Newtonsoft.Json;
+using Steam3Kit.Types;
+using Steam3Server;
+using Steam3Server.Others;
+using Steam3Server.SQL;
+using System;
+using System.IO.Compression;
+using System.Text;
+using ValveKeyValue;
 
 namespace ConsoleApp
 {
@@ -49,7 +57,45 @@ namespace ConsoleApp
             AppTickets.PrintTicket(ticketstruct);
             */
             ServerCore.Start();
+            /*
+            var txt = File.ReadAllBytes("33A355AD45272DEFC8098366824961C15B8A7C28.txt");
+
+            var comp = GZip.Compress(txt);
+            File.WriteAllBytes("test.txt.gz",comp);
+            */
+
+
+
+
+
+            //var sevev = AppInfoReader.App7Node;
+            /*
+            var app = DBAppInfo.GetApp(480);
+            Console.WriteLine(Encoding.UTF8.GetString(app.DataByte));
+            var appinf = AppInfoNodeExt.ReadEntries(app.DataByte);
+            Console.WriteLine(AppInfoNodeKV.ParseToVDF(appinf));*/
+            //var readed = AppInfoNodeExt.ReadEntries(app.DataByte);
+            //Console.WriteLine(BitConverter.ToString(app.DataByte).Replace("-"," "));
+
+            /*
+            Console.WriteLine(AppInfoNodeKV.ParseToVDF(sevev));
+            var bin = AppInfoNodeKV.ParseToBin(sevev);
+            Console.WriteLine(BitConverter.ToString(bin).Replace("-"," "));
+            var appinf = AppInfoNodeExt.ReadEntries(bin);
+            Console.WriteLine(AppInfoNodeKV.ParseToVDF(appinf));
+            /*
+            var sevev = AppInfoReader.App7Node;
+            //Console.WriteLine(JsonConvert.SerializeObject(sevev, Formatting.Indented));
+            Console.WriteLine(BitConverter.ToString(AppInfoNodeKV.ParseToBin(sevev)));
+            /*
+            var app = DBAppInfo.GetApp(7);
+            Console.WriteLine(BitConverter.ToString(app.DataByte));
+            MemoryStream mem = new(app.DataByte);
+            BinaryReader binaryReader = new BinaryReader(mem);
+            var ext = AppInfoNodeExt.ReadEntries(binaryReader);
+            Console.WriteLine(ext);*/
             Console.ReadLine();
+
         }
     }
 }

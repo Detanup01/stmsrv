@@ -1,4 +1,5 @@
-﻿using Steam3Server.Servers;
+﻿using Steam3Server.HTTPServer.Responses;
+using Steam3Server.Servers;
 using UtilsLib;
 
 namespace Steam3Server.HTTPServer
