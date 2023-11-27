@@ -1,7 +1,7 @@
 ﻿using Steam3Kit.Utils;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Steam3Kit.Types
+namespace Steam3Kit.Networking
 {
     public class UdpPacket
     {
@@ -49,7 +49,7 @@ namespace Steam3Kit.Types
                 return;
             }
 
-            if (this.Header.Magic != UdpHeader.MAGIC)
+            if (Header.Magic != UdpHeader.MAGIC)
             {
                 Payload = new MemoryStream();
                 return;
@@ -67,10 +67,10 @@ namespace Steam3Kit.Types
         /// <param name="type">The type.</param>
         public UdpPacket(EUdpPacketType type)
         {
-            this.Header = new UdpHeader();
-            this.Payload = new MemoryStream();
+            Header = new UdpHeader();
+            Payload = new MemoryStream();
 
-            this.Header.PacketType = type;
+            Header.PacketType = type;
         }
 
         /// <summary>

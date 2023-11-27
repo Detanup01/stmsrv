@@ -1,7 +1,7 @@
 ﻿using Steam.NetworkingSockets.UDP;
 using Steam3Kit;
 using Steam3Server.Servers;
-using Steam3Kit.Types;
+using Steam3Kit.Networking;
 using UtilsLib;
 
 namespace Steam3Server.CMServer

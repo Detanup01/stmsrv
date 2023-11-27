@@ -21,9 +21,12 @@ namespace Steam3Server.HTTPServer.Responses
             Console.WriteLine(hash.ToUpper() + " vs " + appHash + " vs " + appBinHash);
 
             //if (hash.ToUpper() == appHash)
-            var comp = GZip.Compress(app.DataByte);
+            MemoryStream memory = new();
+            var gzip = new ValveAppInfo_GZ(memory);
+            gzip.Write(app.DataByte);
+            gzip.Close();
             ResponseCreator creator = new();
-            creator.SetBody(comp);
+            creator.SetBody(memory.ToArray());
             e.session.SendResponse(creator.GetResponse());
 
         }

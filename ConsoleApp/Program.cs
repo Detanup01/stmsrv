@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Steam3Kit.Types;
+using Steam3Kit.Utils;
 using Steam3Server;
 using Steam3Server.Others;
 using Steam3Server.SQL;
@@ -14,6 +15,42 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
+            /*
+            using var ms = new MemoryStream(File.ReadAllBytes("4a6bb73b6b2a142dec14a48219e744889e3ac8b7.txt.gz_ori"));
+            using var gz_reader = new BinaryReader(ms, System.Text.Encoding.UTF8, true);
+
+            var GZIPMagic = gz_reader.ReadUInt16();
+            var GZIP_COMP_METHOD = gz_reader.ReadByte();
+            var Flags = gz_reader.ReadByte();
+            var timestamp = gz_reader.ReadInt32();
+            var comp_lvl = gz_reader.ReadByte();
+            var os = gz_reader.ReadByte();
+            Console.WriteLine(GZIPMagic.ToString());
+            Console.WriteLine(GZIP_COMP_METHOD.ToString());
+            Console.WriteLine(Flags.ToString());
+            Console.WriteLine(timestamp.ToString());
+            Console.WriteLine(comp_lvl.ToString());
+            Console.WriteLine(os.ToString());
+            //
+            MemoryStream memory = new();
+            var gzip =  new customGZIP(memory);
+            gzip.Write(File.ReadAllBytes("4a6bb73b6b2a142dec14a48219e744889e3ac8b7.txt"));
+            gzip.Close();
+            File.WriteAllBytes("4a6bb73b6b2a142dec14a48219e744889e3ac8b7_test.txt.gz", memory.ToArray());
+            */
+
+            /*
+            var decomp = VZipUtil.Decompress(File.ReadAllBytes("4a6bb73b6b2a142dec14a48219e744889e3ac8b7.txt.gz"));
+            File.WriteAllBytes("4a6bb73b6b2a142dec14a48219e744889e3ac8b7_test",decomp);
+            */
+
+
+
+
+
+
+
+
             /*
             string x = File.ReadAllText("ticket.txt");
             var bytes_long = Enumerable.Range(0, x.Length / 2)
