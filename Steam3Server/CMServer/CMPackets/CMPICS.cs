@@ -5,6 +5,7 @@ using Steam3Server.SQL;
 using Google.Protobuf;
 using Steam3Server.Servers;
 using UtilsLib;
+using Steam3Server.Others;
 
 namespace Steam3Server.CMServer.CMPackets
 {
@@ -64,7 +65,7 @@ namespace Steam3Server.CMServer.CMPackets
                         MissingToken = false,
                         OnlyPublic = false
                     };
-                    if (proto.MetaDataOnly)
+                    if (!proto.MetaDataOnly)
                     {
                         app.Buffer = ByteString.CopyFrom(japp.DataByte);
                     }
@@ -95,9 +96,17 @@ namespace Steam3Server.CMServer.CMPackets
                         //Buffer = ByteString.CopyFrom(jpkg.DataBytes),
                         MissingToken = false
                     }; 
-                    if (proto.MetaDataOnly)
+                    if (!proto.MetaDataOnly)
                     {
                         package.Buffer = ByteString.CopyFrom(jpkg.DataBytes);
+                        /*
+                        MemoryStream memory = new();
+                        var gzip = new ValveAppInfo_GZ(memory);
+                        gzip.Write(jpkg.DataBytes);
+                        gzip.Close();
+                        package.Buffer = ByteString.CopyFrom(memory.ToArray());
+                        memory.Dispose();
+                        */
                     }
                     pkgInfos.Add(package);
                 }

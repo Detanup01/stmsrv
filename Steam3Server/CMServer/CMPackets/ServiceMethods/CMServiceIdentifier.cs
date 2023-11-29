@@ -30,6 +30,7 @@ namespace Steam3Server.CMServer.CMPackets.ServiceMethods
                 case "PublishedFile":
                     break;
                 case "Credentials":
+                    CMServiceCredential.Process(splitted[1], clientMsgProtobuf, sessionBase);
                     break;
                 case "ClientMetrics":
                     break;

@@ -45,10 +45,10 @@ namespace Steam3Server.Others
                 {
                     break;
                 }
-
+                
                 if (subid != 0)
                     break;
-
+                
                 var package = new JPackage
                 {
                     SubID = subid,
@@ -64,10 +64,10 @@ namespace Steam3Server.Others
                 var Data = deserializer.Deserialize(input);
                 MemoryStream ms = new();
                 ms = new();
-                deserializer.Serialize(ms, Data);
-                ms.Dispose();
+                deserializer.Serialize(ms, Data);             
+                Console.WriteLine(ms.Length);
                 package.DataBytes = ms.ToArray();
-
+                ms.Dispose();
                 DBPackageInfo.AddPackages(package);
             } while (true);
 
@@ -82,5 +82,6 @@ namespace Steam3Server.Others
             sp.Stop();
             UtilsLib.Debug.PWDebug("Elapsed time for PackageInfo: " + sp.ElapsedMilliseconds + " ms");
         }
+
     }
 }

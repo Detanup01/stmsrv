@@ -13,6 +13,7 @@ namespace Steam3Server.Others
 
         const ushort GZIP_MAGIC = 35615;
         const byte GZIP_COMPRESSIONMETHOD_DEFLATE = 8;
+        const Int32 TimeStamp = 0;
         Crc32 Crc32;
         int Len;
         bool IsFinished;
@@ -29,7 +30,7 @@ namespace Steam3Server.Others
             baseOutputStream_.Write(BitConverter.GetBytes(GZIP_MAGIC));
             baseOutputStream_.WriteByte(GZIP_COMPRESSIONMETHOD_DEFLATE);
             baseOutputStream_.WriteByte(0); //should be flags
-            baseOutputStream_.Write(BitConverter.GetBytes((int)0)); //timestamp (always 0)
+            baseOutputStream_.Write(BitConverter.GetBytes(TimeStamp)); //timestamp (always 0)
             baseOutputStream_.WriteByte(0); //compression level
             baseOutputStream_.WriteByte(255); //ZipOS (255/Unknown)
             baseOutputStream_.Flush();

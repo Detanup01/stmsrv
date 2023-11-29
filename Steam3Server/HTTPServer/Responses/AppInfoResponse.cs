@@ -26,9 +26,10 @@ namespace Steam3Server.HTTPServer.Responses
             gzip.Write(app.DataByte);
             gzip.Close();
             ResponseCreator creator = new();
+            creator.SetHeader("Content-Type", "application/gzip");
             creator.SetBody(memory.ToArray());
             e.session.SendResponse(creator.GetResponse());
-
+            Console.WriteLine($"appinfo http for {appid}: OK!");
         }
     }
 }

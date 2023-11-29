@@ -127,6 +127,9 @@ namespace Steam3Server.CMServer
                 case EMsg.ClientUseLocalDeviceAuthorizations:
                     CMLocalDeviceAuth.Response(clientMsgProtobuf, sessionBase);
                     break;
+                case EMsg.ClientRequestFriendData:
+                    CMFriendData.Response(clientMsgProtobuf, sessionBase);
+                    break;
                 default:
                     Debug.PWDebug("Opps: " + clientMsgProtobuf.MsgType.ToString());
                     break;

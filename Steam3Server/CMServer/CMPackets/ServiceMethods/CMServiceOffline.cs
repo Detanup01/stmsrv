@@ -1,18 +1,11 @@
 ﻿using Google.Protobuf;
 using Steam.Messages.Offline;
-using Steam.Messages.Player;
-using Steam.OfflineTicket;
 using Steam3Kit;
 using Steam3Kit.MSG;
 using Steam3Kit.Types;
 using Steam3Kit.Utils;
 using Steam3Server.Servers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using UtilsLib;
 
 namespace Steam3Server.CMServer.CMPackets.ServiceMethods
@@ -20,6 +13,9 @@ namespace Steam3Server.CMServer.CMPackets.ServiceMethods
     public class CMServiceOffline
     {
         internal const string Password = "OfflineTicket";
+        internal const string pbkdf1_HASH = "a449ac97703fbde2";
+        internal const string pbkdf2_HASH = "aaf594640556b170";
+
 
         public static void Process(string name, PacketClientMsgProtobuf clientMsgProtobuf, WSSSessionBase sessionBase)
         {
@@ -52,7 +48,7 @@ namespace Steam3Server.CMServer.CMPackets.ServiceMethods
             var HashSig = rsa.SignData(offlineLogonTicket.ToByteArray(), HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
             Debug.PWDebug("Ticket Hash len: " + HashSig.Length, "GetOfflineLogonTicket");
 
-            throw new Exception("MAKE SURE YOU ARE MAKING B1 and to B2 a new SALT!");
+            //throw new Exception("MAKE SURE YOU ARE MAKING B1 and to B2 a new SALT!");
 
             protoRSP.Body.Signature = ByteString.CopyFrom(HashSig);
 
@@ -62,17 +58,17 @@ namespace Steam3Server.CMServer.CMPackets.ServiceMethods
 
                 byte[] bytes1 = new byte[32];
                 byte[] bytes2 = new byte[32];
-                using (var pbkdf2 = new Rfc2898DeriveBytes(
+                using (var pbkdf1 = new Rfc2898DeriveBytes(
                 Password,
-                Convert.FromHexString(""),
+                Convert.FromHexString(pbkdf1_HASH),
                 6,
                 HashAlgorithmName.SHA512))
                 {
-                    bytes1 = pbkdf2.GetBytes(32);
+                    bytes1 = pbkdf1.GetBytes(32);
                 }
                 using (var pbkdf2 = new Rfc2898DeriveBytes(
                 Password,
-                Convert.FromHexString(""),
+                Convert.FromHexString(pbkdf2_HASH),
                 4,
                 HashAlgorithmName.SHA512))
                 {
@@ -83,16 +79,12 @@ namespace Steam3Server.CMServer.CMPackets.ServiceMethods
                 {
                     EncryptedTicket = ByteString.CopyFrom(byte3),
                     Kdf1 = 6,
-                    Salt1 = ByteString.CopyFrom(Convert.FromHexString("")),
+                    Salt1 = ByteString.CopyFrom(Convert.FromHexString(pbkdf1_HASH)),
                     Kdf2 = 4,
-                    Salt2 = ByteString.CopyFrom(Convert.FromHexString("")),
+                    Salt2 = ByteString.CopyFrom(Convert.FromHexString(pbkdf2_HASH)),
                     Signature = ByteString.CopyFrom(HashSig)
 
                 };
-            }
-            else
-            {
-                protoRSP.Body.EncryptedTicket = null;
             }
 
             sessionBase.SendBinaryAsync(protoRSP.Serialize());

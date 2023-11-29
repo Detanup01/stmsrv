@@ -29,4 +29,12 @@ namespace Steam3Server.SQL
         public string MachineId { get; set; }
     }
 
+    public class JFriendData : JStemUser
+    {
+        public string PlayerName { get; set; }
+        public uint Last_LogOff { get; set; }
+        public uint Last_LogOn { get; set; }
+        public uint Last_Seen { get; set; }
+    }
+
 }
