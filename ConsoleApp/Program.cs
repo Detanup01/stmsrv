@@ -6,6 +6,7 @@ using Steam3Server.Others;
 using Steam3Server.SQL;
 using System;
 using System.IO.Compression;
+using System.Net;
 using System.Text;
 using ValveKeyValue;
 
@@ -43,22 +44,25 @@ namespace ConsoleApp
             var decomp = VZipUtil.Decompress(File.ReadAllBytes("4a6bb73b6b2a142dec14a48219e744889e3ac8b7.txt.gz"));
             File.WriteAllBytes("4a6bb73b6b2a142dec14a48219e744889e3ac8b7_test",decomp);
             */
+            var buf = File.ReadAllBytes("480.appinfo.bin");
+            using var mem_out = new MemoryStream();
+            var gz = new ValveAppInfo_GZ(mem_out);
+            gz.Write(buf);
+            gz.Close();
+            File.WriteAllBytes("6E05A57678FD3EA9FD7DCC76DA6F6356BE1787C3.txt.gz", mem_out.ToArray());
 
 
 
 
 
-
-
-
-            /*
             string x = File.ReadAllText("ticket.txt");
             var bytes_long = Enumerable.Range(0, x.Length / 2)
    .Select(i => Convert.ToByte(x.Substring(i * 2, 2), 16))
    .ToArray();
             var ticketstruct = AppTickets.GetTicket(bytes_long);
-
+            //Console.WriteLine(IPAddress.Parse("127.0.0.1").Address);
             Console.WriteLine(ticketstruct.ToString());
+            /*
             Console.WriteLine();
             var steamID = new SteamID(666, Steam3Kit.EUniverse.Public, Steam3Kit.EAccountType.Individual);
             var bytes = AppTickets.CreateTicket(new()
@@ -100,9 +104,6 @@ namespace ConsoleApp
             var comp = GZip.Compress(txt);
             File.WriteAllBytes("test.txt.gz",comp);
             */
-
-
-
 
 
             //var sevev = AppInfoReader.App7Node;

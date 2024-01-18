@@ -130,7 +130,7 @@ namespace Steam3Server.Others
                     $"OFlags: {OwnershipFlags}, " +
                     $"OWGenTime: {OwnershipTicketGenerated}, " +
                     $"OWExp: {OwnershipTicketExpires}, " +
-                    $"Licenses: {string.Join(" ", this.Licenses)} " +
+                    $"Licenses: {string.Join(" ", this.Licenses)}," +
                     $"DLC Count: {DLC.Count}, " +
                     $"DLC's: {string.Join(" ", this.DLC)}, " +
                     $"Signature: {BitConverter.ToString(Signature).Replace("-", "")}, SigLen: {Signature.Length} unk: {unk}" + gc_specific;
@@ -284,12 +284,13 @@ namespace Steam3Server.Others
                 }
 
                 int ownershipTicketOffset = (int)ms.Position;
-                //Console.WriteLine(ownershipTicketOffset);
+                Console.WriteLine(ownershipTicketOffset);
                 ticketStruct.OwnershipLength = ticketReader.ReadInt32();
+                Console.WriteLine($"OTO: {ownershipTicketOffset}, OL: {ticketStruct.OwnershipLength}, MSL: {ms.Length}, +: {(ownershipTicketOffset + ticketStruct.OwnershipLength)}");
                 if (ownershipTicketOffset + ticketStruct.OwnershipLength != ms.Length &&
                     ownershipTicketOffset + ticketStruct.OwnershipLength + 128 != ms.Length)
                 {
-                    throw new Exception("ownershipTicketOffset + ownershipTicketLength");
+                    throw new Exception("ownershipTicketOffset + ownershipTicketLength | " + $"OTO: {ownershipTicketOffset}, OL: {ticketStruct.OwnershipLength}, MSL: {ms.Length}, +: {(ownershipTicketOffset + ticketStruct.OwnershipLength)}");
                 }
 
                 ticketStruct.Version = ticketReader.ReadUInt32();
@@ -332,6 +333,10 @@ namespace Steam3Server.Others
                 if (ms.Position + 128 == ms.Length)
                 {
                     ticketStruct.Signature = ticketReader.ReadBytes(128);
+                }
+                else
+                {
+                    ticketStruct.Signature = new byte[] { };
                 }
             }
             catch (Exception ex)

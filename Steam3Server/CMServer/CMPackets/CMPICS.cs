@@ -6,6 +6,7 @@ using Google.Protobuf;
 using Steam3Server.Servers;
 using UtilsLib;
 using Steam3Server.Others;
+using System.Text;
 
 namespace Steam3Server.CMServer.CMPackets
 {
@@ -37,6 +38,8 @@ namespace Steam3Server.CMServer.CMPackets
 
         static void ProductInfo(PacketClientMsgProtobuf clientMsgProtobuf, WSSSessionBase sessionBase)
         {
+            //  Apps buffer is text VDF, and package buffer is binary VDF
+            // only meta data will be returned in the reponse (e.g. change number, missing_token, sha1)
             var proto = CMsgClientPICSProductInfoRequest.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
             Debug.PWDebug(proto.ToString());
             var protoRSP = new ClientMsgProtobuf<CMsgClientPICSProductInfoResponse>(EMsg.ClientPICSProductInfoResponse);
@@ -55,19 +58,20 @@ namespace Steam3Server.CMServer.CMPackets
                 }
                 else
                 {
+                    var buf = Encoding.UTF8.GetBytes(AppInfoNodeExt.ReadEntries(japp.DataByte).ParseToVDF());
                     CMsgClientPICSProductInfoResponse.Types.AppInfo app = new()
                     {
                         Appid = item.Appid,
                         ChangeNumber = japp.ChangeNumber,
                         Sha = ByteString.CopyFrom(japp.Hash),
-                        Size = (uint)japp.DataByte.Length,
+                        Size = (uint)buf.Length,
                         //Buffer = ByteString.CopyFrom(japp.DataByte),
                         MissingToken = false,
                         OnlyPublic = false
                     };
-                    if (!proto.MetaDataOnly)
+                    if (!proto.MetaDataOnly) 
                     {
-                        app.Buffer = ByteString.CopyFrom(japp.DataByte);
+                        app.Buffer = ByteString.CopyFrom(buf);
                     }
                     appInfos.Add(app);
                 }
@@ -87,26 +91,20 @@ namespace Steam3Server.CMServer.CMPackets
                 }
                 else
                 {
+                    byte[] PkgBytes = new byte[] { 0x01, 0x00, 0x00, 0x00 };
+                    PkgBytes = PkgBytes.Concat(PkgBytes).ToArray();
                     CMsgClientPICSProductInfoResponse.Types.PackageInfo package = new()
                     { 
                         ChangeNumber = jpkg.ChangeNumber,
                         Sha = ByteString.CopyFrom(jpkg.Hash),
-                        Size = (uint)jpkg.DataBytes.Length,
+                        Size = (uint)PkgBytes.Length,
                         Packageid = item.Packageid,
                         //Buffer = ByteString.CopyFrom(jpkg.DataBytes),
                         MissingToken = false
                     }; 
                     if (!proto.MetaDataOnly)
                     {
-                        package.Buffer = ByteString.CopyFrom(jpkg.DataBytes);
-                        /*
-                        MemoryStream memory = new();
-                        var gzip = new ValveAppInfo_GZ(memory);
-                        gzip.Write(jpkg.DataBytes);
-                        gzip.Close();
-                        package.Buffer = ByteString.CopyFrom(memory.ToArray());
-                        memory.Dispose();
-                        */
+                        package.Buffer = ByteString.CopyFrom(PkgBytes);
                     }
                     pkgInfos.Add(package);
                 }

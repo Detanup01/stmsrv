@@ -7,6 +7,7 @@ namespace Steam3Server.Others
 {
     public class PackageInfoReader
     {
+        static List<uint> EnabledPackages = new () { 0, 17906 };
         private const uint Magic = 0x06_56_55_28;
         private const uint Magic27 = 0x06_56_55_27;
         /// <summary>
@@ -46,7 +47,7 @@ namespace Steam3Server.Others
                     break;
                 }
                 
-                if (subid != 0)
+                if (!EnabledPackages.Contains(subid))
                     break;
                 
                 var package = new JPackage

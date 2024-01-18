@@ -70,13 +70,15 @@ namespace Steam3Server.Others
                         Hash = reader.ReadBytes(20),
                         ChangeNumber = reader.ReadUInt32(),
                     };
+                    int readDataBytes = (int)size - 4 - 4 - 8 - 20 - 4;
                     if (magic == Magic28)
                     {
                         app.BinaryDataHash = reader.ReadBytes(20);
+                        readDataBytes -= 20;
                     }
                     Apps.Add(appid);
 
-                    app.DataByte = reader.ReadBytes(((int)size-4-4-8-20-4-20));
+                    app.DataByte = reader.ReadBytes(readDataBytes);
                     /*
                     var x = AppInfoNodeExt.ReadEntries(reader);
                     if (app.AppID == 480)
