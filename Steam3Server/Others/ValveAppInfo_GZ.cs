@@ -43,13 +43,12 @@ namespace Steam3Server.Others
             baseOutputStream_.Flush();
         }
 
-        public override void Write(ReadOnlySpan<byte> buffer)
+        public override void Write(byte[] buffer, int offset, int count)
         {
-            base.Write(buffer);
+            base.Write(buffer, offset, count);
             Crc32.Update(buffer.ToArray());
             Len = buffer.Length;
         }
-
         public override void Finish()
         {
             if (IsFinished)

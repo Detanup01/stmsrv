@@ -47,7 +47,7 @@ namespace ConsoleApp
             var buf = File.ReadAllBytes("480.appinfo.bin");
             using var mem_out = new MemoryStream();
             var gz = new ValveAppInfo_GZ(mem_out);
-            gz.Write(buf);
+            gz.Write(buf, 0 , buf.Length);
             gz.Close();
             File.WriteAllBytes("6E05A57678FD3EA9FD7DCC76DA6F6356BE1787C3.txt.gz", mem_out.ToArray());
 

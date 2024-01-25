@@ -23,7 +23,7 @@ namespace Steam3Server.HTTPServer.Responses
             //if (hash.ToUpper() == appHash)
             MemoryStream memory = new();
             var gzip = new ValveAppInfo_GZ(memory);
-            gzip.Write(app.DataByte);
+            gzip.Write(app.DataByte, 0 , app.DataByte.Length);
             gzip.Close();
             ResponseCreator creator = new();
             creator.SetHeader("Content-Type", "application/gzip");
