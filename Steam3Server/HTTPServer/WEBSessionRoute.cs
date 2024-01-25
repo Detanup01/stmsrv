@@ -23,7 +23,7 @@ namespace Steam3Server.HTTPServer
             }
             else
             {
-                if (e.session.Headers["host"].Contains("clientconfig.local.steamstatic.com") && e.request.Url.Contains("/appinfo/"))
+                if (/*e.session.Headers["host"].Contains("clientconfig.local.steamstatic.com") && */e.request.Url.Contains("/appinfo/"))
                 {
                     AppInfoResponse.Response(e);
                 }

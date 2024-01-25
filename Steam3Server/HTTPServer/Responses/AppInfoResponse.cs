@@ -21,13 +21,10 @@ namespace Steam3Server.HTTPServer.Responses
             Console.WriteLine(hash.ToUpper() + " vs " + appHash + " vs " + appBinHash);
 
             //if (hash.ToUpper() == appHash)
-            MemoryStream memory = new();
-            var gzip = new ValveAppInfo_GZ(memory);
-            gzip.Write(app.DataByte, 0 , app.DataByte.Length);
-            gzip.Close();
+            var data = VDFParserExt.ParseAppInfoGZ(app.DataByte);
             ResponseCreator creator = new();
             creator.SetHeader("Content-Type", "application/gzip");
-            creator.SetBody(memory.ToArray());
+            creator.SetBody(data);
             e.session.SendResponse(creator.GetResponse());
             Console.WriteLine($"appinfo http for {appid}: OK!");
         }

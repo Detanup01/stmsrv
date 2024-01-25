@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ICSharpCode.SharpZipLib.GZip;
+using Newtonsoft.Json;
 using Steam3Kit.Types;
 using Steam3Kit.Utils;
 using Steam3Server;
@@ -44,13 +45,7 @@ namespace ConsoleApp
             var decomp = VZipUtil.Decompress(File.ReadAllBytes("4a6bb73b6b2a142dec14a48219e744889e3ac8b7.txt.gz"));
             File.WriteAllBytes("4a6bb73b6b2a142dec14a48219e744889e3ac8b7_test",decomp);
             */
-            var buf = File.ReadAllBytes("480.appinfo.bin");
-            using var mem_out = new MemoryStream();
-            var gz = new ValveAppInfo_GZ(mem_out);
-            gz.Write(buf, 0 , buf.Length);
-            gz.Close();
-            File.WriteAllBytes("6E05A57678FD3EA9FD7DCC76DA6F6356BE1787C3.txt.gz", mem_out.ToArray());
-
+            
 
 
 
@@ -98,6 +93,19 @@ namespace ConsoleApp
             AppTickets.PrintTicket(ticketstruct);
             */
             ServerCore.Start();
+
+            var app = DBAppInfo.GetApp(218);
+            var appinfo = VDFParserExt.ParseAppInfoGZ(app.DataByte);
+            File.WriteAllBytes("218.txt.gz", appinfo);
+            appinfo = VDFParserExt.ParseAppInfo(app.DataByte);
+            File.WriteAllBytes("218.txt", appinfo);
+            for (int i = 0; i < 7; i++)
+            {
+                appinfo = VDFParserExt.ParseAppInfoGZ(app.DataByte, i);
+
+                File.WriteAllBytes($"218_Test_{i}.txt.gz",appinfo);
+            }
+           
             /*
             var txt = File.ReadAllBytes("33A355AD45272DEFC8098366824961C15B8A7C28.txt");
 

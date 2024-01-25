@@ -24,6 +24,15 @@ namespace Steam3Server.Others
             Len = 0;
             WriteHeader();
         }
+
+        public ValveAppInfo_GZ(Stream baseOutputStream, int c) : base(baseOutputStream, new Deflater(c, true))
+        {
+            IsFinished = false;
+            Crc32 = new();
+            Len = 0;
+            WriteHeader();
+        }
+
         public void WriteHeader()
         {
             Crc32.Reset();

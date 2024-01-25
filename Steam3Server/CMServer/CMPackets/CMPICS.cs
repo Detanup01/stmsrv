@@ -7,6 +7,8 @@ using Steam3Server.Servers;
 using UtilsLib;
 using Steam3Server.Others;
 using System.Text;
+using System.Linq;
+using System.Security.Cryptography;
 
 namespace Steam3Server.CMServer.CMPackets
 {
@@ -58,12 +60,12 @@ namespace Steam3Server.CMServer.CMPackets
                 }
                 else
                 {
-                    var buf = Encoding.UTF8.GetBytes(AppInfoNodeExt.ReadEntries(japp.DataByte).ParseToVDF());
+                    var buf = VDFParserExt.ParseAppInfo(japp.DataByte);
                     CMsgClientPICSProductInfoResponse.Types.AppInfo app = new()
                     {
                         Appid = item.Appid,
                         ChangeNumber = japp.ChangeNumber,
-                        Sha = ByteString.CopyFrom(japp.Hash),
+                        Sha = ByteString.CopyFrom(SHA1.HashData(buf)),
                         Size = (uint)buf.Length,
                         //Buffer = ByteString.CopyFrom(japp.DataByte),
                         MissingToken = false,
@@ -91,12 +93,13 @@ namespace Steam3Server.CMServer.CMPackets
                 }
                 else
                 {
+                    // should be ok result?
                     byte[] PkgBytes = new byte[] { 0x01, 0x00, 0x00, 0x00 };
-                    PkgBytes = PkgBytes.Concat(PkgBytes).ToArray();
+                    PkgBytes = PkgBytes.Concat(jpkg.DataBytes).ToArray();
                     CMsgClientPICSProductInfoResponse.Types.PackageInfo package = new()
                     { 
                         ChangeNumber = jpkg.ChangeNumber,
-                        Sha = ByteString.CopyFrom(jpkg.Hash),
+                        Sha = ByteString.CopyFrom(SHA1.HashData(PkgBytes)),
                         Size = (uint)PkgBytes.Length,
                         Packageid = item.Packageid,
                         //Buffer = ByteString.CopyFrom(jpkg.DataBytes),
@@ -114,7 +117,7 @@ namespace Steam3Server.CMServer.CMPackets
             protoRSP.Body.HttpMinSize = 4096;
             protoRSP.Body.HttpHost = "clientconfig.local.steamstatic.com";
             protoRSP.Body.ResponsePending = false;
-            //Debug.PWDebug(protoRSP.Body.ToString());
+            Debug.PWDebug(protoRSP.Body.ToString());
             sessionBase.SendBinaryAsync(protoRSP.Serialize());
         }
 
@@ -137,7 +140,8 @@ namespace Steam3Server.CMServer.CMPackets
                         appChanges.Add(new()
                         { 
                             Appid = appid,
-                            ChangeNumber = app.ChangeNumber
+                            ChangeNumber = app.ChangeNumber,
+                            NeedsToken = false
                         });
                     }
                 }
@@ -153,7 +157,8 @@ namespace Steam3Server.CMServer.CMPackets
                         packageChanges.Add(new()
                         {
                             Packageid = subid,
-                            ChangeNumber = sub.ChangeNumber
+                            ChangeNumber = sub.ChangeNumber,
+                            NeedsToken = false
                         });
                     }
                 }
@@ -165,7 +170,7 @@ namespace Steam3Server.CMServer.CMPackets
                 PackageChanges = { packageChanges },
                 SinceChangeNumber = proto.SinceChangeNumber
             };
-            //Debug.PWDebug(protoRSP.Body.ToString());
+            Debug.PWDebug(protoRSP.Body.ToString());
             sessionBase.SendBinaryAsync(protoRSP.Serialize());
         }
 
