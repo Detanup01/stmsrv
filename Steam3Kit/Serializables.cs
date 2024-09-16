@@ -1,8 +1,8 @@
 ﻿using Steam3Kit.Types;
 using System.Runtime.InteropServices;
-using Steam.GC;
 using Google.Protobuf;
 using Steam3Kit.Utils;
+using Steam.Messages.Base;
 
 namespace Steam3Kit
 {

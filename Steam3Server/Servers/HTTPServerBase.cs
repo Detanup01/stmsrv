@@ -21,7 +21,11 @@ namespace Steam3Server.Servers
             }
             // Show HTTP request content
             if (!Headers["host"].Contains("crash.steampowered.com"))
-                Debug.PWDebug(request);
+            {
+                HTTPServerBase server = (HTTPServerBase)Server;
+                Debug.PWDebug(server.ServerName + " " + request);
+            }
+                
 
 
             // If we have something we override!

@@ -91,14 +91,14 @@ namespace Steam3Kit.MSG
         /// <value>
         /// The target job id.
         /// </value>
-        public ulong TargetJobID => Header.Proto.JobIdTarget;
+        public ulong TargetJobID => Header.Proto.JobidTarget;
         /// <summary>
         /// Gets the source job id for this packet message.
         /// </summary>
         /// <value>
         /// The source job id.
         /// </value>
-        public ulong SourceJobID => Header.Proto.JobIdSource;
+        public ulong SourceJobID => Header.Proto.JobidSource;
         /// <summary>
         /// Gets the header for this packet message.
         /// </summary>

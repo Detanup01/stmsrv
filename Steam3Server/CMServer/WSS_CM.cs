@@ -1,22 +1,32 @@
 ﻿using Steam.Messages.ClientServer.Login;
-using Steam.Messages.ClientServer2;
-using Steam.Messages.RemoteClient.Service.Message;
 using Steam3Kit;
 using Steam3Kit.MSG;
 using Steam3Kit.Utils;
-using Steam3Server.CMServer.CMPackets;
-using Steam3Server.CMServer.CMPackets.ServiceMethods;
+using Steam3Server.CMServer.Packets;
+using Steam3Server.CMServer.Packets.ServiceMethods;
 using UtilsLib;
-using Steam3Server.Servers;
+using ModdableWebServer.Attributes;
+using ModdableWebServer;
+using ModdableWebServer.Helper;
 
 namespace Steam3Server.CMServer
 {
     public class WSS_CM
     {
-        public static void ProcessWSS(Tuple<byte[], WSSSessionBase> incoming)
+        [WS("/cmsocket/")]
+        public static void cmsocket(WebSocketStruct socketStruct)
+        {
+            if (socketStruct.WSRequest != null)
+            {
+                var bytes = socketStruct.WSRequest.Value.buffer.Skip((int)socketStruct.WSRequest.Value.offset).Take((int)socketStruct.WSRequest.Value.size).ToArray();
+                ProcessWSS((bytes, socketStruct));
+            }
+        }
+
+        public static void ProcessWSS((byte[] data, WebSocketStruct webSocket) incoming)
         {
             var rsp = new byte[] { };
-            uint rawEMsg = BitConverter.ToUInt32(incoming.Item1, 0);
+            uint rawEMsg = BitConverter.ToUInt32(incoming.data, 0);
             EMsg eMsg = MsgUtil.GetMsg(rawEMsg);
             switch (eMsg)
             {
@@ -25,7 +35,7 @@ namespace Steam3Server.CMServer
                 case EMsg.ChannelEncryptResponse:
                 case EMsg.ChannelEncryptResult:
                     {
-                        var enc = new PacketMsg(eMsg, incoming.Item1);
+                        var enc = new PacketMsg(eMsg, incoming.data);
                         Debug.WriteDebug($"ChannelEncrypt! IsProto: {enc.IsProto}\nTargetJobID: {enc.TargetJobID}\nSourceJobID: {enc.SourceJobID}\nMsgType: {enc.MsgType}", "WSS_CM");
                     }
                     return;
@@ -36,13 +46,13 @@ namespace Steam3Server.CMServer
                 if (MsgUtil.IsProtoBuf(rawEMsg))
                 {
                     // if the emsg is flagged, we're a proto message
-                    var clientMsgProtobuf = new PacketClientMsgProtobuf(eMsg, incoming.Item1);
-                    ProtoSwitcher(clientMsgProtobuf, incoming.Item2);
+                    var clientMsgProtobuf = new PacketClientMsgProtobuf(eMsg, incoming.data);
+                    ProtoSwitcher(clientMsgProtobuf, incoming.webSocket);
                 }
                 else
                 {
                     // otherwise we're a struct message
-                    var enc = new PacketClientMsg(eMsg, incoming.Item1);
+                    var enc = new PacketClientMsg(eMsg, incoming.data);
                     Debug.WriteDebug($"PacketClientMsg!!\nIsProto: {enc.IsProto}\nTargetJobID: {enc.TargetJobID}\nSourceJobID: {enc.SourceJobID}\nMsgType: {enc.MsgType}", "WSS_CM.NOT.IsProtoBuf");
                     return;
                 }
@@ -53,7 +63,7 @@ namespace Steam3Server.CMServer
             }
         }
 
-        public static void ProtoSwitcher(PacketClientMsgProtobuf clientMsgProtobuf, WSSSessionBase sessionBase)
+        public static void ProtoSwitcher(PacketClientMsgProtobuf clientMsgProtobuf, WebSocketStruct webSocket)
         {
             //todo: send ClientServersAvailable with ClientLogOnResponse
             //todo: should save our ID to not send both data when loggin in.
@@ -66,16 +76,12 @@ namespace Steam3Server.CMServer
                 case EMsg.ClientLogon:
                     {
                         //CMSendServersAvailable.Response(clientMsgProtobuf, sessionBase);
-                        CMLoginRSP.Response(clientMsgProtobuf, sessionBase);
+                        LoginRSP.Response(clientMsgProtobuf, webSocket);
                         break;
                     }
                 case EMsg.ClientRegisterAuthTicketWithCM:
                     {
-                        /*
-                        var protobuf = CMsgClientRegisterAuthTicketWithCM.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
-                        Debug.PWDebug(protobuf.ToString());*/
-                        CMSendServersAvailable.Response(clientMsgProtobuf, sessionBase);
-                        //CMLoginRSP.Response(clientMsgProtobuf, sessionBase);
+                        SendServersAvailable.Response(clientMsgProtobuf, webSocket);
                         break;
                     }
                 // HB
@@ -86,49 +92,50 @@ namespace Steam3Server.CMServer
                         {
                             var protoRSP = new ClientMsgProtobuf<CMsgClientHeartBeat>(EMsg.ClientHeartBeat);
                             protoRSP.ParseHeader(clientMsgProtobuf);
-                            sessionBase.Send(protoRSP.Serialize());
+                            webSocket.SendWebSocketByteArray(protoRSP.Serialize());
                         }
                         break;
                     }
                 case EMsg.ClientGetAppOwnershipTicket:
                     {
-                        CMAppTicket.Response(clientMsgProtobuf, sessionBase);
+                        AppTicket.Response(clientMsgProtobuf, webSocket);
                         break;
                     }
                 case EMsg.ServiceMethodCallFromClient:
                     {
                         //Debug.PWDebug("ServiceMethodCallFromClient");
-                        CMServiceIdentifier.Identify(clientMsgProtobuf, sessionBase);
+                        ServiceIdentifier.Identify(clientMsgProtobuf, webSocket);
                         break;
                     }
                 case EMsg.ClientPICSProductInfoRequest:
                 case EMsg.ClientPICSChangesSinceRequest:
                 case EMsg.ClientPICSAccessTokenRequest:
                     {
-                        CMPICS.Response(clientMsgProtobuf, sessionBase);
+                        PICS.Response(clientMsgProtobuf, webSocket);
                         break;
                     }
                 // Other
                 case EMsg.ClientUFSGetFileListForApp:
                     {
-                        CMUFS.ClientUFSGetFileListForApp(clientMsgProtobuf, sessionBase);
+                        Debug.PWDebug(EMsg.ClientUFSGetFileListForApp + " !");
+                        //UFS.ClientUFSGetFileListForApp(clientMsgProtobuf, sessionBase);
                         break;
                     }
                 case EMsg.ClientUCMEnumerateUserSubscribedFiles:
                 case EMsg.ClientUCMEnumeratePublishedFilesByUserAction:
                     {
-                        CMUCM.ClientUCMEnumerateUserSubscribedFiles(clientMsgProtobuf, sessionBase);
+                        UCM.ClientUCMEnumerateUserSubscribedFiles(clientMsgProtobuf, webSocket);
                         break;
                     }
-                case EMsg.ClientCurrentUIMode:
                 case EMsg.ClientConnectionStats:
+                    ConnectionStats.Response(clientMsgProtobuf, webSocket);
                     // Here we could track each thing of these, but we dont want currently.
                     break;
                 case EMsg.ClientUseLocalDeviceAuthorizations:
-                    CMLocalDeviceAuth.Response(clientMsgProtobuf, sessionBase);
+                    LocalDeviceAuth.Response(clientMsgProtobuf, webSocket);
                     break;
                 case EMsg.ClientRequestFriendData:
-                    CMFriendData.Response(clientMsgProtobuf, sessionBase);
+                    FriendData.Response(clientMsgProtobuf, webSocket);
                     break;
                 default:
                     Debug.PWDebug("Opps: " + clientMsgProtobuf.MsgType.ToString());

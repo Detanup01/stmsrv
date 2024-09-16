@@ -15,6 +15,7 @@ namespace Steam3Server.Servers
 
         public override void OnWsReceived(byte[] buffer, long offset, long size)
         {
+            Debug.PWDebug("OnWsReceived!!!");
             var s = (WSSServerBase)this.Server;
             string message = BitConverter.ToString(buffer[..(int)size]);
             //Debug.PWDebug("Incoming: " + message, $"{s.ServerName}.OnWsRecieved");
@@ -23,13 +24,14 @@ namespace Steam3Server.Servers
 
         protected override void OnReceivedRequest(HttpRequest request)
         {
+            Debug.PWDebug("OnReceivedRequest!!!");
             Headers.Clear();
             for (int i = 0; i < request.Headers; i++)
             {
                 var headerpart = request.Header(i);
                 Headers.Add(headerpart.Item1.ToLower(), headerpart.Item2);
             }
-            Debug.PWDebug(request);
+            Debug.PWDebug(" WSSSessionBase " + request);
             if (Headers.ContainsKey("upgrade"))
             {
                 base.OnReceivedRequest(request);
@@ -72,14 +74,14 @@ namespace Steam3Server.Servers
         {
             EventConnected?.Invoke(this, (WSSSessionBase)session);
             Sessions.TryAdd(session.Id, (WSSSessionBase)session);
-            //Debug.PWDebug($"Session Connected with ID: {session.Id} ", $"{ServerName}.OnConnected");
+            Debug.PWDebug($"Session Connected with ID: {session.Id} ", $"{ServerName}.OnConnected");
         }
 
         protected override void OnDisconnected(SslSession session)
         {
             EventDisconnected?.Invoke(this, (WSSSessionBase)session);
             Sessions.Remove(session.Id, out _);
-            //Debug.PWDebug($"Session Disconnected with ID: {session.Id} ", $"{ServerName}.OnDisconnected");
+            Debug.PWDebug($"Session Disconnected with ID: {session.Id} ", $"{ServerName}.OnDisconnected");
         }
 
         protected override void OnError(SocketError error) => Debug.PWDebug($"WSS session caught an error: {error}");

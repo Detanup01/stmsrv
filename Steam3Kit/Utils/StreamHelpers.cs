@@ -1,9 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Steam3Kit.Utils
 {
-    internal static class StreamHelpers
+    public static class StreamHelpers
     {
         [ThreadStatic]
         static byte[]? data;
@@ -100,6 +101,43 @@ namespace Steam3Kit.Utils
             data[dataLength] = 0x00; // '\0'
 
             stream.Write(data, 0, data.Length);
+        }
+
+        public static string ReadNullTermUtf8String(this Stream stream)
+        {
+            var buffer = ArrayPool<byte>.Shared.Rent(32);
+
+            try
+            {
+                var position = 0;
+
+                do
+                {
+                    var b = stream.ReadByte();
+
+                    if (b <= 0) // null byte or stream ended
+                    {
+                        break;
+                    }
+
+                    if (position >= buffer.Length)
+                    {
+                        var newBuffer = ArrayPool<byte>.Shared.Rent(buffer.Length * 2);
+                        Buffer.BlockCopy(buffer, 0, newBuffer, 0, buffer.Length);
+                        ArrayPool<byte>.Shared.Return(buffer);
+                        buffer = newBuffer;
+                    }
+
+                    buffer[position++] = (byte)b;
+                }
+                while (true);
+
+                return Encoding.UTF8.GetString(buffer[..position]);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
 
         public static int ReadAll(this Stream stream, byte[] buffer)

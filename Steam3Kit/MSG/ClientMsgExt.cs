@@ -4,9 +4,8 @@
     {
         public static void ParseHeader(this ClientMsgProtobuf clientMsgProtobuf, PacketClientMsgProtobuf packetClientMsgProtobuf)
         {
-            clientMsgProtobuf.Header.Proto = packetClientMsgProtobuf.Header.Proto;
-            clientMsgProtobuf.Header.Proto.JobIdTarget = packetClientMsgProtobuf.Header.Proto.JobIdSource;
-            clientMsgProtobuf.Header.Proto.JobIdSource = packetClientMsgProtobuf.Header.Proto.JobIdTarget;
+            clientMsgProtobuf.Header.Proto.JobidTarget = packetClientMsgProtobuf.Header.Proto.JobidSource;
+            clientMsgProtobuf.Header.Proto.JobidSource = packetClientMsgProtobuf.Header.Proto.JobidTarget;
         }
 
     }

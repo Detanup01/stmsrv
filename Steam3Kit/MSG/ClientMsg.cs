@@ -1,12 +1,7 @@
 ﻿using Google.Protobuf;
-using Steam.GC;
+using Steam.Messages.Base;
 using Steam3Kit.Types;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Steam3Kit.MSG
 {
@@ -44,8 +39,8 @@ namespace Steam3Kit.MSG
         /// </value>
         public override int SessionID
         {
-            get => ProtoHeader.ClientSessionId;
-            set => ProtoHeader.ClientSessionId = value;
+            get => ProtoHeader.ClientSessionid;
+            set => ProtoHeader.ClientSessionid = value;
         }
         /// <summary>
         /// Gets or sets the <see cref="SteamID"/> for this client message.
@@ -57,8 +52,8 @@ namespace Steam3Kit.MSG
         [DisallowNull, NotNull]
         public override SteamID? SteamID
         {
-            get => ProtoHeader.ClientSteamId;
-            set => ProtoHeader.ClientSteamId = value ?? throw new ArgumentNullException(nameof(value));
+            get => ProtoHeader.Steamid;
+            set => ProtoHeader.Steamid = value ?? throw new ArgumentNullException(nameof(value));
         }
 #pragma warning restore CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
 
@@ -70,8 +65,8 @@ namespace Steam3Kit.MSG
         /// </value>
         public override JobID TargetJobID
         {
-            get => ProtoHeader.JobIdTarget;
-            set => ProtoHeader.JobIdTarget = value ?? throw new ArgumentNullException(nameof(value));
+            get => ProtoHeader.JobidTarget;
+            set => ProtoHeader.JobidTarget = value ?? throw new ArgumentNullException(nameof(value));
         }
         /// <summary>
         /// Gets or sets the source job id for this client message.
@@ -81,8 +76,8 @@ namespace Steam3Kit.MSG
         /// </value>
         public override JobID SourceJobID
         {
-            get => ProtoHeader.JobIdSource;
-            set => ProtoHeader.JobIdSource = value ?? throw new ArgumentNullException(nameof(value));
+            get => ProtoHeader.JobidSource;
+            set => ProtoHeader.JobidSource = value ?? throw new ArgumentNullException(nameof(value));
         }
 
 
@@ -171,7 +166,7 @@ namespace Steam3Kit.MSG
             : this(eMsg, payloadReserve)
         {
             // our target is where the message came from
-            Header.Proto.JobIdTarget = msg.Header.Proto.JobIdSource;
+            Header.Proto.JobidTarget = msg.Header.Proto.JobidSource;
         }
 
         /// <summary>

@@ -2,6 +2,8 @@
 using Steam3Server.SQL;
 using ValveKeyValue;
 using System.Diagnostics;
+using Steam3Kit.Types;
+using Steam3Server.Settings;
 
 namespace Steam3Server.Others
 {
@@ -38,19 +40,17 @@ namespace Steam3Server.Others
             List<uint> Packages = new();
 
             var deserializer = KVSerializer.Create(KVSerializationFormat.KeyValues1Binary);
+            var serializer = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
+
             do
             {
-                var subid = reader.ReadUInt32();
-
+                uint subid = reader.ReadUInt32();
                 if (subid == 0xFFFFFFFF)
                 {
                     break;
                 }
-                
-                if (!EnabledPackages.Contains(subid))
-                    break;
-                
-                var package = new JPackage
+
+                JPackage package = new()
                 {
                     SubID = subid,
                     Hash = reader.ReadBytes(20),
@@ -61,15 +61,18 @@ namespace Steam3Server.Others
                 {
                     package.Token = reader.ReadUInt64();
                 }
-
-                var Data = deserializer.Deserialize(input);
-                MemoryStream ms = new();
-                ms = new();
-                deserializer.Serialize(ms, Data);             
-                Console.WriteLine(ms.Length);
+                var kv = deserializer.Deserialize(input);
+                using MemoryStream ms = new();
+                deserializer.Serialize(ms, kv);
                 package.DataBytes = ms.ToArray();
                 ms.Dispose();
-                DBPackageInfo.AddPackages(package);
+                if (MainConfig.Instance().PackageInfoConfig.StopSkipping || MainConfig.Instance().PackageInfoConfig.SkipIds.Contains(subid))
+                {
+                    UtilsLib.Debug.PWDebug("SubId in list, getting it: " + subid);
+                    DBPackageInfo.AddPackage(package);
+                    Packages.Add(subid);
+                }
+
             } while (true);
 
 

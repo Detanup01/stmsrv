@@ -8,7 +8,7 @@ namespace Steam3Server.SQL
         public readonly static string Packages = "Packages";
         public readonly static string PackageInfoCache = "PackageInfoCache";
         #region Apps
-        public static void AddPackages(JPackage data)
+        public static void AddPackage(JPackage data)
         {
             using (var db = new LiteDatabase(DBName))
             {
@@ -21,7 +21,7 @@ namespace Steam3Server.SQL
             }
         }
 
-        public static void EditPackages(JPackage data)
+        public static void EditPackage(JPackage data)
         {
             using (var db = new LiteDatabase(DBName))
             {
@@ -36,7 +36,7 @@ namespace Steam3Server.SQL
             }
         }
 
-        public static JPackage? GetPackages(uint SubId)
+        public static JPackage? GetPackage(uint SubId)
         {
             using (var db = new LiteDatabase(DBName))
             {
@@ -47,7 +47,7 @@ namespace Steam3Server.SQL
             }
         }
 
-        public static void DeletePackages(uint SubId)
+        public static void DeletePackage(uint SubId)
         {
             using (var db = new LiteDatabase(DBName))
             {

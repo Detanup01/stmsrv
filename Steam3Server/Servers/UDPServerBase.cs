@@ -23,7 +23,7 @@ namespace Steam3Server.Servers
             }
         }
         public string ServerName;
-        public event EventHandler<UDPReceivedEvent> ServerRecieved;
+        public event EventHandler<UDPReceivedEvent>? ServerRecieved;
         public UDPServerBase(string Servername, string address, int port) : base(address, port)
         {
             ServerName = Servername;
@@ -40,6 +40,7 @@ namespace Steam3Server.Servers
             string message = BitConverter.ToString(buffer[..(int)size]);
             Debug.PWDebug("Incoming: " + message, $"{ServerName}.OnReceived");
             ServerRecieved?.Invoke(this, new UDPReceivedEvent(endpoint,buffer,offset,size));
+            ReceiveAsync();
         }
 
         protected override void OnSent(EndPoint endpoint, long sent) => ReceiveAsync();

@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Steam3Kit;
+﻿using Steam3Kit;
+using Steam3Kit.Utils;
+using Steam3Server.Settings;
 using Steam3Server.SQL;
 using System.Diagnostics;
-using System.Globalization;
-using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using ValveKeyValue;
 
@@ -12,14 +11,9 @@ namespace Steam3Server.Others
 {
     public class AppInfoReader
     {
-        public static AppInfoNode App7Node;
-        //  Reason to limit:    AppInfo vdf is big, and we have a small db. Import AppIds that only we want in first place, then we can expand it later. AKA Extras or something.
-        private static List<uint> AppListToGet = new List<uint>()
-                {
-                    7, 8, 92, 211, 215, 218, 440, 480, 564, 570, 575, 630, 640, 760, 761, 764, 765, 766, 767, 1007, 1840, 42300, 42320, 61800, 61810, 61820, 61830, 202351, 202352, 202355, 203300, 218800, 221410, 223910, 228980, 241100, 243730, 243750, 244310, 248210, 250820, 261310, 313250, 321770, 366490, 373300, 401530, 405270, 407350, 413080, 413090, 413100, 424690, 443510, 476580, 551410, 588460, 613220, 733580, 736120, 744350, 807210, 858280, 875860, 891390, 961940, 1016370, 1054830, 1070560, 1070910, 1113280, 1161040, 1182480, 1235260, 1245040, 1391110, 1420170, 1456390, 1493710, 1580130, 1628350, 1635560, 1716750, 1826330, 1877380, 1887720, 1899670, 1977700, 2053530, 2180100, 2230260, 2348590, 2371090
-                };
+        private const uint Magic29 = 0x07_56_44_29;
         private const uint Magic28 = 0x07_56_44_28;
-        private const uint Magic = 0x07_56_44_27;
+        private const uint Magic27 = 0x07_56_44_27;
         /// <summary>
         /// Opens and reads the given filename.
         /// </summary>
@@ -40,15 +34,38 @@ namespace Steam3Server.Others
 
             using var reader = new BinaryReader(input);
             var magic = reader.ReadUInt32();
-            if (magic != Magic && magic != Magic28)
+            if (magic != Magic27 && magic != Magic28 && magic != Magic29)
             {
-                throw new InvalidDataException($"Unknown magic header: {magic:X}");
+                throw new InvalidDataException($"Unknown magic header: {magic:X} {magic}");
             }
             var Universe = (EUniverse)reader.ReadUInt32();
 
             List<uint> Apps = new();
 
+            var options = new KVSerializerOptions();
+
+            if (magic == Magic29)
+            {
+                var stringTableOffset = reader.ReadInt64();
+                var offset = reader.BaseStream.Position;
+                reader.BaseStream.Position = stringTableOffset;
+                var stringCount = reader.ReadUInt32();
+                var stringPool = new string[stringCount];
+
+                for (var i = 0; i < stringCount; i++)
+                {
+                    stringPool[i] = reader.BaseStream.ReadNullTermUtf8String();
+                }
+
+                reader.BaseStream.Position = offset;
+
+                options.StringTable = new(stringPool);
+                //Console.WriteLine(string.Join(" ", stringPool));
+            }
+
             var deserializer = KVSerializer.Create(KVSerializationFormat.KeyValues1Binary);
+            var serializer = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
+
             do
             {
                 var appid = reader.ReadUInt32();
@@ -58,9 +75,9 @@ namespace Steam3Server.Others
                     break;
                 }
                 var size = reader.ReadUInt32();
-                if (AppListToGet.Contains(appid))
+                if (MainConfig.Instance().AppInfoConfig.StopSkipping || MainConfig.Instance().AppInfoConfig.SkipIds.Contains(appid))
                 {
-                    //UtilsLib.Debug.PWDebug("AppId in list, getting it: " + appid);
+                    UtilsLib.Debug.PWDebug("AppId in list, getting it: " + appid);
                     var app = new JApp
                     {
                         AppID = appid,
@@ -70,25 +87,40 @@ namespace Steam3Server.Others
                         Hash = reader.ReadBytes(20),
                         ChangeNumber = reader.ReadUInt32(),
                     };
-                    int readDataBytes = (int)size - 4 - 4 - 8 - 20 - 4;
-                    if (magic == Magic28)
+                    if (magic == Magic28 || magic == Magic29)
                     {
                         app.BinaryDataHash = reader.ReadBytes(20);
-                        readDataBytes -= 20;
+                        Console.WriteLine("app.BinaryDataHash hash: " + Convert.ToHexString(app.BinaryDataHash));
                     }
+                   
+                    Console.WriteLine("app hash: " + Convert.ToHexString(app.Hash));
+                    var kv = deserializer.Deserialize(input, options);
+                    using MemoryStream ms2 = new();
+                    serializer.Serialize(ms2, kv, options);
+                    app.DataByte = ms2.ToArray();
+                    ms2.Dispose();
+                    Console.WriteLine("deser hash: " + Convert.ToHexString(SHA1.HashData(app.DataByte)));
+                    File.WriteAllBytes($"apps/{appid}.txt", app.DataByte);
+                    string des_string = Encoding.UTF8.GetString(app.DataByte);
+                    des_string = des_string.Replace("\"\t\"", "\"\t\t\"");
+                    Console.WriteLine("toZip beforenull hash: " + Convert.ToHexString(SHA1.HashData(Encoding.UTF8.GetBytes(des_string))));
+                    var toZip = Encoding.UTF8.GetBytes(des_string).Concat(new byte[] { 0x0 }).ToArray();
+                    Console.WriteLine("toZip hash: " + Convert.ToHexString(SHA1.HashData(toZip)));
+                    File.WriteAllBytes($"apps/{appid}_appinfo_tozip.txt", toZip);
+                    using var mem_out = new MemoryStream();
+                    var gz = new ValveAppInfo_GZ(mem_out, -1);
+                    gz.Write(app.DataByte, 0, app.DataByte.Length);
+                    gz.Close();
+                    var appinfogz = mem_out.ToArray();
+                    mem_out.Dispose();
+                    Console.WriteLine("appinfogz hash: " + Convert.ToHexString(SHA1.HashData(appinfogz)));
+                    File.WriteAllBytes($"apps/{appid}_appinfo_compressed.tar.gz", appinfogz);
+                    using var mem3 = new MemoryStream();
+                    deserializer.Serialize(mem3, kv, options);
+                    var deser_arr = mem3.ToArray();
+                    File.WriteAllBytes($"apps/{appid}_appinfo_arr", mem3.ToArray());
+                    Console.WriteLine("deser_arr hash: " + Convert.ToHexString(SHA1.HashData(deser_arr)));
                     Apps.Add(appid);
-
-                    app.DataByte = reader.ReadBytes(readDataBytes);
-                    /*
-                    var x = AppInfoNodeExt.ReadEntries(reader);
-                    if (app.AppID == 480)
-                        App7Node = x;
-                    var test = AppInfoNodeKV.ParseToBin(x);
-                    var vdf = AppInfoNodeKV.ParseToVDF(x);
-                    Console.WriteLine(vdf);
-                    app.DataByte = test;//Encoding.UTF8.GetBytes(vdf);
-                    //app.DataByte = ReadEntriesBin(reader);
-                    */
                     DBAppInfo.AddApp(app);
                 }
                 else
@@ -114,68 +146,6 @@ namespace Steam3Server.Others
         public static DateTime DateTimeFromUnixTime(uint unixTime)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(unixTime);
-        }
-       
-
-        static byte[] ReadEntriesBin(BinaryReader _binaryReader)
-        {
-            List<byte> bytes = new();
-            while (true)
-            {
-                byte type = _binaryReader.ReadByte();
-                bytes.Add(type);
-                if (type == 0x08)
-                {
-                    break;
-                }
-
-                bytes.AddRange(ReadStringBin(_binaryReader));
-
-                switch (type)
-                {
-                    case 0x00:
-                        bytes.AddRange(ReadEntriesBin(_binaryReader));
-
-                        break;
-                    case 0x01:
-                        bytes.AddRange(ReadStringBin(_binaryReader));
-
-                        break;
-                    case 0x02:
-                        bytes.AddRange(_binaryReader.ReadBytes(4));
-                        break;
-                    default:
-
-                        throw new ArgumentOutOfRangeException(string.Format(CultureInfo.InvariantCulture, "Unknown entry type '{0}'", type));
-                }
-            }
-            return bytes.ToArray();
-        }
-
-        static byte[] ReadStringBin(BinaryReader _binaryReader)
-        {
-            List<byte> bytes = new List<byte>();
-
-            try
-            {
-                bool stringDone = false;
-                do
-                {
-                    byte b = _binaryReader.ReadByte();
-                    bytes.Add(b);
-                    if (b == 0)
-                    {
-                        stringDone = true;
-                    }
-                } while (!stringDone);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-
-                throw;
-            }
-            return bytes.ToArray();
         }
     }
 }

@@ -20,6 +20,7 @@ namespace Steam3Server.Servers
 
         protected override void OnReceived(byte[] buffer, long offset, long size)
         {
+            Debug.PWDebug("OnReceived");
             var server = (SSLServerBase)Server;
             string message = BitConverter.ToString(buffer[..(int)size]);
             Debug.PWDebug("Incoming: " + message, $"{server.ServerName}.OnReceived");
