@@ -3,7 +3,7 @@ using System.IO.Hashing;
 
 namespace Steam3Kit.Utils;
 
-static class VZipUtil
+public static class VZipUtil
 {
     private const ushort VZipHeader = 0x5A56;
     private const ushort VZipFooter = 0x767A;
@@ -12,7 +12,7 @@ static class VZipUtil
 
     private const char Version = 'a';
 
-    public static int Decompress(MemoryStream ms, byte[] destination, bool verifyChecksum = true)
+    public static int Decompress(MemoryStream ms, byte[] destination, out uint creationTimestampOrSecondaryCRC, bool verifyChecksum = true)
     {
         using BinaryReader reader = new BinaryReader(ms);
         if (reader.ReadUInt16() != VZipHeader)
@@ -27,8 +27,7 @@ static class VZipUtil
 
         // Sometimes this is a creation timestamp (e.g. for Steam Client VZips).
         // Sometimes this is a CRC32 (e.g. for depot chunks).
-        uint creationTimestampOrSecondaryCRC = reader.ReadUInt32();
-
+        creationTimestampOrSecondaryCRC = reader.ReadUInt32();
         // this is 5 bytes of LZMA properties
         var propertyBits = reader.ReadByte();
         var dictionarySize = reader.ReadUInt32();
@@ -47,7 +46,7 @@ static class VZipUtil
 
         if (destination.Length < sizeDecompressed)
         {
-            throw new ArgumentException("The destination buffer is smaller than the decompressed data size.", nameof(destination));
+            throw new ArgumentException($"The destination buffer is smaller than the decompressed data size. (Size: {sizeDecompressed}, Dest Size: {destination.Length})", nameof(destination));
         }
 
         // jump back to the beginning of the compressed data
@@ -79,7 +78,7 @@ static class VZipUtil
         return sizeDecompressed;
     }
 
-    public static byte[] Compress(byte[] buffer)
+    public static byte[] Compress(byte[] buffer, uint TimeStamp = 0)
     {
         using MemoryStream ms = new MemoryStream();
         using BinaryWriter writer = new BinaryWriter(ms);
@@ -87,7 +86,10 @@ static class VZipUtil
 
         writer.Write(VZipHeader);
         writer.Write((byte)Version);
-        writer.Write(crc);
+        if (TimeStamp != 0)
+            writer.Write(TimeStamp);
+        else
+            writer.Write(crc);
 
         int dictionary = 1 << 23;
         int posStateBits = 2;
@@ -128,7 +130,6 @@ static class VZipUtil
         {
             encoder.Code(input, ms, -1, -1, null);
         }
-
         writer.Write(crc);
         writer.Write((uint)buffer.Length);
         writer.Write(VZipFooter);

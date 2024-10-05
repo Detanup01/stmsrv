@@ -6,8 +6,8 @@ namespace MainLib
     public class ImpSocket
     {
         public Socket sock;
-        public string PubAddress;
-        public ImpSocket(Socket socket = null)
+        public string PubAddress = string.Empty;
+        public ImpSocket(Socket? socket = null)
         {
             if (socket == null) 
                 sock = new Socket(SocketType.Stream, ProtocolType.Tcp);

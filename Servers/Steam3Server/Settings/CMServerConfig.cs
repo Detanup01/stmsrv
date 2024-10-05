@@ -2,7 +2,7 @@
 
 public sealed class CMServerConfig
 {
-    public string EndPoint { get; set; } = string.Empty;
+    public string EndPoint { get; set; } = "127.0.0.1";
     public string CMType { get; set; } = "websocket";
     public string Destination { get; set; } = "sto1"; // Stockholm 1
     public int Load { get; set; } = 10;

@@ -12,7 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Libs\DB4Steam\DB4Steam.csproj" />
+    <ProjectReference Include="..\..\Libs\PICS_Backend\PICS_Backend.csproj" />
+    <ProjectReference Include="..\..\Libs\SteamProtobufs\SteamProtobufs.csproj" />
+    <ProjectReference Include="..\..\Libs\UtilsLib\UtilsLib.csproj" />
+    <ProjectReference Include="..\..\Servers\Steam3CMServer\Steam3CMServer.csproj" />
     <ProjectReference Include="..\..\Servers\Steam3Server\Steam3Server.csproj" />
+    <ProjectReference Include="..\..\SteamKits\OldSteamKit\OldSteamKit.csproj" />
+    <ProjectReference Include="..\..\SteamKits\Steam3Kit\Steam3Kit.csproj" />
   </ItemGroup>
 
 </Project>

@@ -10,6 +10,8 @@ namespace Steam3Kit.Types
     [DebuggerDisplay("{Render()}, {ConvertToUInt64()}")]
     public class SteamID
     {
+        public static readonly SteamID Empty = new SteamID(0);
+
         readonly BitVector64 steamid;
 
         static readonly Regex Steam2Regex = new Regex(

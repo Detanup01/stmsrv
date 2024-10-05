@@ -53,7 +53,7 @@ public class PICS
         var apps = proto.Apps.ToList();
         foreach (var item in apps)
         {
-            var japp = DBAppInfo.GetApp(item.Appid);
+            var japp = DBApp.GetApp(item.Appid);
             if (japp == null)
             {
                 UnknownApps.Add(item.Appid);
@@ -85,7 +85,7 @@ public class PICS
         var pkgs = proto.Packages.ToList();
         foreach (var item in pkgs)
         {
-            var jpkg = DBPackageInfo.GetPackage(item.Packageid);
+            var jpkg = DBPackages.GetPackage(item.Packageid);
             if (jpkg == null)
             {
                 UnkownPKGs.Add(item.Packageid);
@@ -139,39 +139,26 @@ public class PICS
         List<CMsgClientPICSChangesSinceResponse.Types.AppChange> appChanges = new();
         List<CMsgClientPICSChangesSinceResponse.Types.PackageChange> packageChanges = new();
         uint since = proto.SinceChangeNumber;
-        var appinfo = DBAppInfo.GetAppInfoCache();
-        if (appinfo == null)
+        foreach (var app in DBApp.GetApps(x => x.ChangeNumber > since))
         {
-            Logger.PWLog("We have a problem!");
-            return;
-        }
-        foreach (var appid in appinfo.Apps)
-        {
-            var app = DBAppInfo.GetApp(appid);
-            if (app != null && app.ChangeNumber > since)
+            if (app != null)
             {
                 appChanges.Add(new()
                 {
-                    Appid = appid,
+                    Appid = app.AppID,
                     ChangeNumber = app.ChangeNumber,
-                    NeedsToken = false
+                    NeedsToken = app.Token != 0
                 });
             }
         }
-        var packageInfo = DBPackageInfo.GetPackageInfoCache();
-        if (packageInfo == null)
+
+        foreach (var sub in DBPackages.GetPackages(x => x.ChangeNumber > since))
         {
-            Logger.PWLog("We have a problem!");
-            return;
-        }
-        foreach (var subid in packageInfo.Packages)
-        {
-            var sub = DBPackageInfo.GetPackage(subid);
-            if (sub != null && sub.ChangeNumber > since)
+            if (sub != null)
             {
                 packageChanges.Add(new()
                 {
-                    Packageid = subid,
+                    Packageid = sub.SubID,
                     ChangeNumber = sub.ChangeNumber,
                     NeedsToken = false
                 });
@@ -180,7 +167,7 @@ public class PICS
         protoRSP.Body = new()
         { 
             AppChanges = { appChanges },
-            CurrentChangeNumber = 25234561,
+            CurrentChangeNumber = CustomPICSVersioning.Latest,
             PackageChanges = { packageChanges },
             SinceChangeNumber = proto.SinceChangeNumber
         };
@@ -204,7 +191,7 @@ public class PICS
         List<uint> denied = new();
         foreach (var item in proto.Appids)
         {
-            var japp = DBAppInfo.GetApp(item);
+            var japp = DBApp.GetApp(item);
             if (japp == null)
             {
                 denied.Add(item);
@@ -223,7 +210,7 @@ public class PICS
         denied = new();
         foreach (var item in proto.Packageids)
         {
-            var jpkg = DBPackageInfo.GetPackage(item);
+            var jpkg = DBPackages.GetPackage(item);
             if (jpkg == null)
             {
                 denied.Add(item);

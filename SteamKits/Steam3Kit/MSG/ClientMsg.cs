@@ -532,4 +532,43 @@ namespace Steam3Kit.MSG
             return ms.ToArray();
         }
     }
+
+    // todo rename this
+    public sealed class TestClientMsg : ClientMsgProtobuf
+    {
+        public IMessage Body;
+
+
+        public TestClientMsg(IMessage body, EMsg eMsg, int payloadReserve = 64)
+            : base(payloadReserve)
+        {
+            Body = body;
+
+            // set our emsg
+            Header.Msg = eMsg;
+        }
+
+
+        public T GetBody<T>() where T : IMessage<T>, new()
+        {
+            return (T)Body;
+        }
+
+
+        /// <summary>
+        /// Serializes this client message instance to a byte array.
+        /// </summary>
+        /// <returns>
+        /// Data representing a client message.
+        /// </returns>
+        public override byte[] Serialize()
+        {
+            using MemoryStream ms = new MemoryStream();
+            Header.Serialize(ms);
+            Body.WriteTo(ms);
+            Payload.WriteTo(ms);
+
+            return ms.ToArray();
+        }
+    }
 }

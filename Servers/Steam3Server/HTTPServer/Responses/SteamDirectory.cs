@@ -31,18 +31,6 @@ internal class SteamDirectory
         return true;
     }
 
-    [HTTP("GET", "/cmping/")]
-    public static bool CMPing(HttpRequest _, ServerStruct serverStruct)
-    {
-        ResponseCreator responseCreator = new(200);
-        responseCreator.SetHeader("X-Steam-CMLoad", "20");
-        responseCreator.SetHeader("Content-Length", "0");
-        responseCreator.SetHeader("Date", DateTime.UtcNow.ToString("R"));
-        serverStruct.Response = responseCreator.GetResponse();
-        serverStruct.SendResponse();
-        return true;
-    }
-
     public static KeyValue MakeResponseKV()
     {
         KeyValue success = new KeyValue("success", "1");

@@ -4,18 +4,21 @@ namespace PICS_Backend;
 
 public class CustomPICSVersioning
 {
-    static Action<ulong>? Changed;
-    static ulong PICSVersion;
+    public static Action<uint>? Changed;
+    static uint PICSVersion;
+    static DateTime LastUpdate;
 
     public static void Init()
     {
         FileExt.CreateIfNotExists("PICS/Version.txt", PICSVersion.ToString());
-        PICSVersion = ulong.Parse(File.ReadAllText("PICS/Version.txt"));
+        PICSVersion = uint.Parse(File.ReadAllText("PICS/Version.txt"));
+        LastUpdate = DateTime.Now;
     }
 
     public static void IndicateChange()
     {
         PICSVersion++;
+        LastUpdate = DateTime.Now;
         Changed?.Invoke(PICSVersion);
     }
 
@@ -24,11 +27,13 @@ public class CustomPICSVersioning
         File.WriteAllText("PICS/Version.txt", PICSVersion.ToString());
     }
 
-    public static ulong Latest => PICSVersion;
+    public static uint Latest => PICSVersion;
 
-    public static ulong GetNew()
+    public static uint GetNew()
     {
         IndicateChange();
         return PICSVersion; 
     }
+
+    public static (uint changeid, DateTime time) GetLast() => (PICSVersion, LastUpdate);
 }

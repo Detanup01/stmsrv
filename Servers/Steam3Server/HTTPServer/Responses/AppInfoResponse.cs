@@ -13,21 +13,29 @@ internal class AppInfoResponse
     public static bool ServerStatus(HttpRequest _, ServerStruct serverStruct)
     {
         var appid = serverStruct.Parameters["appid"];
-        Console.WriteLine(appid);
         var hash = serverStruct.Parameters["hash"];
-        Console.WriteLine(hash);
-        var app = DBAppInfo.GetApp(uint.Parse(appid));
-
+        if (uint.TryParse(appid, out uint u_appid))
+        {
+            serverStruct.Response.MakeErrorResponse("appid cannot be converted to uint");
+            serverStruct.SendResponse();
+            return true;
+        }
+        var app = DBApp.GetApp(u_appid);
+        if (app == null)
+        {
+            serverStruct.Response.MakeErrorResponse("not app found under this appid");
+            serverStruct.SendResponse();
+            return true;
+        }
         var appHash = BitConverter.ToString(app.Hash).Replace("-", "");
-        var appBinHash = BitConverter.ToString(app.BinaryDataHash);
+        var appBinHash = BitConverter.ToString(app.BinaryDataHash).Replace("-","");
 
         Console.WriteLine(hash.ToUpper() + " vs " + appHash + " vs " + appBinHash);
 
         //if (hash.ToUpper() == appHash)
-        var data = InfoExt.ParseAppInfoGZ(app.GetAppInfoStringData());
         ResponseCreator creator = new();
         creator.SetHeader("Content-Type", "application/gzip");
-        creator.SetBody(data);
+        creator.SetBody(VDFHelper.ParseAppInfoGZ(app.GetAppInfoStringData()));
         serverStruct.SendResponse(creator.GetResponse());
         Console.WriteLine($"appinfo http for {appid}: OK!");
         return true;

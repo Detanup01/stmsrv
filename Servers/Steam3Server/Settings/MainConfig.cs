@@ -19,11 +19,6 @@ public class MainConfig
         return instance;
     }
 
-
-    public AppInfoConfig AppInfoConfig { get; set; } = new();
-
-    public PackageInfoConfig PackageInfoConfig { get; set; } = new();
-
     public DatabaseConfig DatabaseConfig { get; set; } = new();
 
     public List<CMServerConfig> CMServerConfigs { get; set; } = new();

@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB4Steam", "Libs\DB4Steam\D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PICS_Backend", "Libs\PICS_Backend\PICS_Backend.csproj", "{DA32A007-DEC9-489A-AB20-E74A3516D1FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerConsole", "Clients\ServerConsole\ServerConsole.csproj", "{A2D238D4-3C06-4F80-A290-52D62D569936}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steam3CMServer", "Servers\Steam3CMServer\Steam3CMServer.csproj", "{50ABC780-516E-4E7D-8765-DB7EAC6A8230}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +67,14 @@ Global
 		{DA32A007-DEC9-489A-AB20-E74A3516D1FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA32A007-DEC9-489A-AB20-E74A3516D1FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA32A007-DEC9-489A-AB20-E74A3516D1FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2D238D4-3C06-4F80-A290-52D62D569936}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2D238D4-3C06-4F80-A290-52D62D569936}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2D238D4-3C06-4F80-A290-52D62D569936}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2D238D4-3C06-4F80-A290-52D62D569936}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50ABC780-516E-4E7D-8765-DB7EAC6A8230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50ABC780-516E-4E7D-8765-DB7EAC6A8230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50ABC780-516E-4E7D-8765-DB7EAC6A8230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50ABC780-516E-4E7D-8765-DB7EAC6A8230}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

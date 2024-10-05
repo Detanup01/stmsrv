@@ -1,18 +1,52 @@
 ﻿
+using Google.Protobuf;
+using ModdableWebServer;
+using ModdableWebServer.Helper;
+using Steam.Messages.ClientServer;
+using Steam.Messages.ClientServer.Login;
+using Steam3CMServer.Packets;
+using Steam3Kit;
+using Steam3Kit.MSG;
+using Steam3Server.CMServer.Packets;
+
+
 namespace ConsoleApp
 {
     internal class Program
     {
         static void Main(string[] args)
         {
+            IPacket packet = new FakeResponse();
+            var protob = new MsgHdrProtoBuf()
+            { 
+                Msg = EMsg.ClientGetAppOwnershipTicket,
+                Proto = new()
+                { 
+                    ClientSessionid = 34,
+                    Steamid = 666
+                }
+            };
+            CMsgClientLogon CMsg = new()
+            { 
+                ClientSuppliedSteamId = new Steam3Kit.Types.SteamID(777, EUniverse.Public, EAccountType.Individual).ConvertToUInt64(),
+                AccountName = "sfgsdfg"
+            };
+            MemoryStream ms = new MemoryStream();
+            protob.Serialize(ms);
+            CMsg.WriteTo(ms);
+            var packetClientMsgProtobuf = new PacketClientMsgProtobuf(EMsg.ClientUseLocalDeviceAuthorizations, ms.ToArray());
+            packet = new LocalDeviceAuth2(packetClientMsgProtobuf, new());
+
+            packet.Start();
+            //Steam3Server.ServerCore.Start();
             /*
-            Steam3Server.ServerCore.Start();
-            InfoExt.stringTable = new(File.ReadAllLines("_stringpool.txt"));
-            AppHashCheck(7);
-            AppHashCheck(440);
-            AppHashCheck(480);
-            Console.ReadLine();
-            */
+            Console.WriteLine(args[0]);
+            MemoryStream stream = new MemoryStream(File.ReadAllBytes(args[0]));
+            int len = (int)stream.Length;
+            byte[] dest = new byte[1048576 * 1024];
+            int size = Steam3Kit.Utils.VZipUtil.Decompress(stream, dest, out uint crc_timestamp, true);
+            var xx = dest.Take(size).ToArray();
+            File.WriteAllBytes("test.zip", xx);*/
         }
 
 
@@ -22,6 +56,14 @@ namespace ConsoleApp
 
 /*
  * 
+ *             
+        Steam3Server.ServerCore.Start();
+        InfoExt.stringTable = new(File.ReadAllLines("_stringpool.txt"));
+        AppHashCheck(7);
+        AppHashCheck(440);
+        AppHashCheck(480);
+        Console.ReadLine();
+            
         static void AppHashCheck(uint appid)
         {
             var app_appid = DBAppInfo.GetApp(appid);

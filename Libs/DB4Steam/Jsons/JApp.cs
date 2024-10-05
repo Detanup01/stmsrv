@@ -2,9 +2,6 @@
 
 public class JApp
 {
-    /// <summary>
-    /// This is a DataBaseId
-    /// </summary>
     public int Id { get; set; }
     public uint AppID { get; set; }
     public DateTime LastUpdated { get; set; }

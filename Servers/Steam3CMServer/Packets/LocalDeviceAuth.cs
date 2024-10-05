@@ -8,6 +8,9 @@ using Steam3Kit.Utils;
 using ModdableWebServer;
 using ModdableWebServer.Helper;
 using Steam3Kit.Types;
+using Steam3CMServer.Packets;
+using Google.Protobuf;
+using DB4Steam;
 
 namespace Steam3Server.CMServer.Packets;
 
@@ -98,5 +101,88 @@ public class LocalDeviceAuth
             ChangeNumber = 5676048,
         });
         webSocket.SendWebSocketByteArray(protoRSP5.Serialize());
+    }
+}
+
+public class LocalDeviceAuth2 : BaseResponse<CMsgClientLogon>
+{
+    public LocalDeviceAuth2(PacketClientMsgProtobuf clientMsgProtobuf, WebSocketStruct webSocket) : 
+        base(clientMsgProtobuf, webSocket, [
+            (EMsg.ClientAccountInfo, new CMsgClientAccountInfo()),
+            (EMsg.ClientEmailAddrInfo, new CMsgClientEmailAddrInfo()),
+            (EMsg.ClientFriendsList, new CMsgClientFriendsList()),
+            (EMsg.ClientPlayerNicknameList, new CMsgClientPlayerNicknameList()),
+            (EMsg.ClientLicenseList, new CMsgClientLicenseList()),
+            ])
+    {
+    }
+
+    public override void MakeResponse(CMsgClientLogon req, Dictionary<EMsg, TestClientMsg> rsp)
+    {
+        var id = new SteamID(req.ClientSuppliedSteamId);
+        if (id.AccountType != EAccountType.Individual)
+            return;
+        var accountInfo = rsp[EMsg.ClientAccountInfo];
+        accountInfo.Header.Proto.Eresult = (int)EResult.OK;
+        CMsgClientAccountInfo clientAccountInfo = accountInfo.GetBody<CMsgClientAccountInfo>();
+        clientAccountInfo.AccountFlags = 0;
+        clientAccountInfo.PersonaName = "TestUser";
+        clientAccountInfo.CountAuthedComputers = 1;
+        clientAccountInfo.IpCountry = "US";
+        clientAccountInfo.TwoFactorState = 0;
+        this.SendClientRsp(rsp[EMsg.ClientAccountInfo]);
+
+        var emailAddrInfo = rsp[EMsg.ClientEmailAddrInfo];
+        emailAddrInfo.Header.Proto.Eresult = (int)EResult.OK;
+        CMsgClientEmailAddrInfo msgClientEmailAddrInfo = emailAddrInfo.GetBody<CMsgClientEmailAddrInfo>();
+        msgClientEmailAddrInfo.EmailAddress = "TestUser@STMSRV.com";
+        msgClientEmailAddrInfo.EmailIsValidated = true;
+        msgClientEmailAddrInfo.CredentialChangeRequiresCode = true;
+        msgClientEmailAddrInfo.PasswordOrSecretqaChangeRequiresCode = true;
+        this.SendClientRsp(rsp[EMsg.ClientEmailAddrInfo]);
+
+
+
+        var clientFriendsList = rsp[EMsg.ClientFriendsList];
+        clientFriendsList.Header.Proto.Eresult = (int)EResult.OK;
+        CMsgClientFriendsList msgClientFriendsList = clientFriendsList.GetBody<CMsgClientFriendsList>();
+        msgClientFriendsList.Bincremental = false;
+        List<CMsgClientFriendsList.Types.Friend> friends = new()
+        {
+            new CMsgClientFriendsList.Types.Friend()
+            {
+                Ulfriendid = 76561199897966918, 
+                Efriendrelationship = (int)EFriendRelationship.Friend
+            }
+        };
+        msgClientFriendsList.Friends.AddRange(friends);
+        this.SendClientRsp(rsp[EMsg.ClientFriendsList]);
+
+
+        var clientPlayerNicknameList = rsp[EMsg.ClientPlayerNicknameList];
+        clientPlayerNicknameList.Header.Proto.Eresult = (int)EResult.OK;
+        CMsgClientPlayerNicknameList msgClientPlayerNicknameList = clientPlayerNicknameList.GetBody<CMsgClientPlayerNicknameList>();
+        msgClientPlayerNicknameList.Removal = false;
+        msgClientPlayerNicknameList.Incremental = false;
+        this.SendClientRsp(rsp[EMsg.ClientPlayerNicknameList]);
+
+
+        var clientLicenseList = rsp[EMsg.ClientLicenseList];
+        clientLicenseList.Header.Proto.Eresult = (int)EResult.OK;
+        CMsgClientLicenseList msgClientLicenseList = clientLicenseList.GetBody<CMsgClientLicenseList>();
+        msgClientLicenseList.Licenses.Add(new CMsgClientLicenseList.Types.License()
+        {
+            PackageId = 0,
+            TimeCreated = (uint)DateUtils.DateTimeToUnixTime(DateTime.UtcNow.AddDays(-10)),
+            TimeNextProcess = 0,
+            MinuteLimit = 0,
+            MinutesUsed = 0,
+            PaymentMethod = (uint)EPaymentMethod.AutoGrant,
+            LicenseType = (uint)ELicenseType.NoLicense,
+            TerritoryCode = 0,
+            PurchaseCountryCode = "US",
+            ChangeNumber = (int)DBPackages.GetPackage(0).ChangeNumber,
+        });
+        this.SendClientRsp(rsp[EMsg.ClientLicenseList]);
     }
 }

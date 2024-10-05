@@ -156,6 +156,11 @@ namespace Steam3Kit.MSG
             MessageParser<T> parser = new(() => new T());
             return parser.ParseFrom(GetBody());
         }
+
+        public void MergeBody(IMessage message)
+        {
+            message.MergeFrom(GetBody());
+        }
     }
 
     /// <summary>

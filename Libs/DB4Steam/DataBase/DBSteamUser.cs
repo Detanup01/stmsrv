@@ -4,9 +4,10 @@ namespace DB4Steam
 {
     internal class DBSteamUser
     {
-        public readonly static string DBName = "Database/SteamUser.db";
-        public readonly static string RegisteredUser = "RegisteredUser";
-        public readonly static string LoggedUser = "LoggedUser";
+        public readonly static string DBName = $"filename={Path.Combine("Database", "SteamUser.db")};connection=Shared";
+        public const string RegisteredUser = "RegisteredUser";
+        public const string LoggedUser = "LoggedUser";
+        public const string SteamProfile = "SteamProfile";
 
         #region Registered User
         public static void AddRegisteredUser(JRegisteredUser data)
@@ -108,6 +109,61 @@ namespace DB4Steam
             using (var db = new LiteDatabase(DBName))
             {
                 var col = db.GetCollection<JLoggedUser>(LoggedUser);
+
+                var toDel = col.FindOne(x => x.SteamID == SteamID);
+
+                if (toDel != null)
+                {
+                    col.Delete(toDel.SteamID);
+                }
+            }
+        }
+        #endregion
+        #region Steam Profile
+        public static void AddSteamProfile(JSteamProfile data)
+        {
+            using (var db = new LiteDatabase(DBName))
+            {
+                var col = db.GetCollection<JSteamProfile>(SteamProfile);
+                if (!col.Exists(x => x.SteamID == data.SteamID))
+                {
+                    var x = col.Count();
+                    col.Insert(data);
+                }
+            }
+        }
+
+        public static void EditSteamProfile(JSteamProfile data)
+        {
+            using (var db = new LiteDatabase(DBName))
+            {
+                var col = db.GetCollection<JSteamProfile>(SteamProfile);
+
+                var toReplace = col.FindOne(x => x.SteamID == data.SteamID);
+
+                if (toReplace != null)
+                {
+                    col.Update(data);
+                }
+            }
+        }
+
+        public static JSteamProfile? GetSteamProfile(ulong SteamID)
+        {
+            using (var db = new LiteDatabase(DBName))
+            {
+                var col = db.GetCollection<JSteamProfile>(SteamProfile);
+
+                var toGet = col.FindOne(x => x.SteamID == SteamID);
+                return toGet;
+            }
+        }
+
+        public static void DeleteSteamProfile(ulong SteamID)
+        {
+            using (var db = new LiteDatabase(DBName))
+            {
+                var col = db.GetCollection<JSteamProfile>(SteamProfile);
 
                 var toDel = col.FindOne(x => x.SteamID == SteamID);
 
