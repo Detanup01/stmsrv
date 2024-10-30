@@ -23,15 +23,20 @@ public class AppInfoExtra
          */
         foreach (var vdfFile in Directory.GetFiles("AppInfo", "*.vdf"))
         {
-            VDFHelper.ReadVDF_File(vdfFile, "AppInfo", out uint appId, out byte[] sha_binhash, out byte[] sha_texthash, out byte[] bin_bytes, out byte[] text_bytes);
+            int ret = VDFHelper.ReadVDF_File(vdfFile, "AppInfo", out uint appId, out byte[] sha_binhash, out byte[] sha_texthash, out byte[] bin_bytes, out byte[] text_bytes);
+            if (ret == 0)
+                continue;
             var idtoken = Apps.FirstOrDefault(x=>x.Id == appId);
             if (idtoken == null)
             {
                 idtoken = new();
             }
+
+            var japp = DBApp.GetApp(appId);
+            if (japp != null && japp.BinaryDataHash == sha_binhash)
+                continue;
             CustomPICSVersioning.IndicateChange();
             var latest_pics = CustomPICSVersioning.GetLast();
-            var japp = DBApp.GetApp(appId);
             if (japp == null)
             {
                 DBApp.AddApp(new JApp()
@@ -44,6 +49,7 @@ public class AppInfoExtra
                     LastUpdated = latest_pics.time,
                     Token = idtoken.Token
                 });
+                continue;
             }
             else
             {

@@ -11,7 +11,7 @@ namespace Steam3Server.HTTPServer.Responses;
 internal class SteamDirectory
 {
     [HTTP("GET", "/ISteamDirectory/GetCMListForConnect/{version}?{args}")]
-    public static bool ServerStatus(HttpRequest _, ServerStruct serverStruct)
+    public static bool GetCMListForConnect(HttpRequest _, ServerStruct serverStruct)
     {
         ResponseCreator responseCreator = new(200);
         if (serverStruct.Parameters.ContainsKey("format") && serverStruct.Parameters["format"] == "vdf")

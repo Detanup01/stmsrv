@@ -124,7 +124,7 @@ namespace SteamClientApp
         {
             Console.WriteLine("logged on!");
             //Apps.PICSGetChangesSince(25332439, true ,true);
-            Apps.PICSGetProductInfo(new SteamApps.PICSRequest(), new SteamApps.PICSRequest(17906,0), false);
+            Apps.PICSGetProductInfo(new SteamApps.PICSRequest(7, 0), new SteamApps.PICSRequest(17906,0), false);
         }
 
         private void OnDisconnected(SteamClient.DisconnectedCallback callback)

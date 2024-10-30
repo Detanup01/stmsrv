@@ -12,7 +12,7 @@ public static class VDFHelper
     public static byte[] GetAppInfoStringData(this JApp jApp)
     {
         var serializer = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
-        var data_text = DataFromKVBinToKVText_StringTable(jApp.DataByte);
+        var data_text = DataFromKVBinToKVText(jApp.DataByte);
         string des_string = Encoding.UTF8.GetString(data_text);
         des_string = des_string.Replace("\"\t\"", "\"\t\t\"");
         return Encoding.UTF8.GetBytes(des_string);
@@ -66,7 +66,7 @@ public static class VDFHelper
         bin_bytes = [];
         text_bytes = [];
         var last_write = File.GetLastWriteTime(vdf_File);
-        var vdf_name = vdf_File.Replace(".vdf", "").Replace(replace_this, "");
+        var vdf_name = vdf_File.Replace(".vdf", "").Replace(replace_this, "").Replace(Path.DirectorySeparatorChar.ToString(), "");
         var vdfBytes = File.ReadAllBytes(vdf_File);
         if (!uint.TryParse(vdf_name, out uint uint_res))
             return 0;

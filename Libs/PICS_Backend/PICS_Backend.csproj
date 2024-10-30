@@ -16,9 +16,4 @@
     <ProjectReference Include="..\DB4Steam\DB4Steam.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="TestAddons\AppInfo\" />
-    <Folder Include="TestAddons\PackageInfo\" />
-  </ItemGroup>
-
 </Project>

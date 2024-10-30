@@ -12,6 +12,7 @@ public class CMServerMain
 
     public static void Start(string CMServerIP, int CMServerPort)
     {
+        DebugPrinter.EnableLogs = true;
         SslContext context = CertHelper.GetContext(SslProtocols.Tls12, $"Keys/global.pfx", "global");
         CMServer = new(context, CMServerIP, CMServerPort);
         CMServer.HTTP_AttributeToMethods.Merge(Assembly.GetAssembly(typeof(CMServerMain)));

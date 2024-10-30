@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Servers\Steam3CMServer\Steam3CMServer.csproj" />
     <ProjectReference Include="..\..\Servers\Steam3Server\Steam3Server.csproj" />
   </ItemGroup>
 

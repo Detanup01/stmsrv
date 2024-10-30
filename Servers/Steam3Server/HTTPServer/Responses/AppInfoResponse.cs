@@ -14,8 +14,9 @@ internal class AppInfoResponse
     {
         var appid = serverStruct.Parameters["appid"];
         var hash = serverStruct.Parameters["hash"];
-        if (uint.TryParse(appid, out uint u_appid))
+        if (!uint.TryParse(appid, out uint u_appid))
         {
+            Console.WriteLine($"appid cannot be converted to uint ({appid})");
             serverStruct.Response.MakeErrorResponse("appid cannot be converted to uint");
             serverStruct.SendResponse();
             return true;
@@ -23,6 +24,7 @@ internal class AppInfoResponse
         var app = DBApp.GetApp(u_appid);
         if (app == null)
         {
+            Console.WriteLine("not app found under this appid");
             serverStruct.Response.MakeErrorResponse("not app found under this appid");
             serverStruct.SendResponse();
             return true;

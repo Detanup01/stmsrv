@@ -1,0 +1,959 @@
+﻿"appinfo"
+{
+	"appid"		"7"
+	"common"
+	{
+		"name"		"Steam Client"
+		"type"		"Config"
+		"associations"
+		{
+		}
+		"gameid"		"7"
+	}
+	"extended"
+	{
+		"familygroupsenabled"		"1"
+		"beta_name_1"		"Steam Beta Update"
+		"beta_contentlist_1"		"steamexe publicbeta"
+		"beta_name_3"		"Steam Deck Stable"
+		"beta_contentlist_3"		"steamexe steamdeck_stable"
+		"beta_name_4"		"Steam Deck Beta"
+		"beta_contentlist_4"		"steamexe steamdeck_publicbeta"
+		"convar_ugccdnreportpct"		"0"
+		"convar_allowguestpasses"		"1"
+		"convar_bclientrecommendationsenabled"		"1"
+		"convar_bsteam3limiteduserenable"		"1"
+		"convar_serverbrowserpingsurveysubmitpct"		"1"
+		"convar_voice_quality"		"6"
+		"convar_library_sharing_account_max"		"5"
+		"convar_@bstorev6nav"		"1"
+		"convar_@bnewgamehelpsiteenabled"		"1"
+		"convar_nclientbackgroundautoupdatetimespreadminutes"		"360"
+		"convar_nclientbackgroundautoupdatetargethour"		"4"
+		"convar_nclientbackgroundautoupdatelessrecentlyplayedthresholdhours"		"192"
+		"convar_nphonenotnowdays"		"7"
+		"convar_bphonebannerenabled"		"0"
+		"convar_benabletradeinvitebarinlaunchers"		"1"
+		"convar_@fmindataratetoattempttwoconnectionsmbps"		"1.5"
+		"convar_@ccsclientmaxnumsocketsperhost"		"8"
+		"convar_depotdeltapatches"		"2"
+		"convar_@nclientservicemethodfordownloadlistpercent"		"100"
+		"convar_bdepotdeltapatchuseapi"		"1"
+		"convar_unshaderhitcachegeneration"		"4"
+		"convar_bshaderdepotnative"		"1"
+		"convar_@bshaderclientgetbucketmanifestusewebapi"		"1"
+		"convar_nclouduploadminintervalsec"		"1800"
+		"convar_@depotbuildernumhttpsocketstomds"		"48"
+		"convar_@depotbuildermaxparalleluploadchunks"		"96"
+		"convar_asyncfileiomaxpendingwin32"		"256"
+		"convar_cappupdateworkingsetmb"		"256"
+		"convar_library_asset_cache_version"		"3"
+		"convar_@busewebmicrotxnpathinsteamclient"		"1"
+		"convar_nclientbackgroundautoupdaterecentlyplayedthresholdhours"		"72"
+		"convar_@ncsjob404responselimit"		"100"
+		"convar_pwidverificationthreshold"		"1588032000"
+		"convar_depotdownloadprogresstimeout"		"900"
+		"convar_@bscreenshotslegacycloudupload"		"0"
+		"convar_@nscreenshotsavemaxwidth"		"9999"
+		"convar_@ncontentupdateautoverifyenable"		"1"
+		"convar_@ncontentupdateautoverifycleanbytesthresholdmb"		"2048"
+		"convar_@ncontentupdateautoverifypostthresholdodds"		"50"
+		"convar_@ncloudclientusegetappfilechangelist"		"1"
+		"convar_@nclientcloudmaxmbparalleluploads"		"32"
+		"convar_ugc_query_default_cache_time"		"600"
+		"convar_ugc_query_max_get_details"		"1000"
+		"convar_asyncfileioalternatereadwrite"		"0"
+		"convar_ncloudsyncintervalsec"		"1800"
+		"convar_workshop_items_update_interval"		"2700"
+		"convar_@nclientdownloadenablehttp2relbranch"		"1"
+		"convar_@nclientdownloadenablehttp2platformwindows"		"1"
+		"convar_@nclientdownloadenablehttp2platformlinux"		"0"
+		"convar_@nclientenablehttp2platformwindows"		"0"
+		"convar_@nclientenablehttp2platformlinux"		"0"
+		"convar_benablemhrcasyncfilereadlog"		"0"
+		"convar_@brefreshdownloadsourcesfrequently"		"1"
+		"convar_@watchdogthreadpercentreport"		"10"
+		"convar_@bprivateappsenabled"		"1"
+		"convar_@nserverrefreshratelimitburst"		"100"
+		"convar_@nserverrefreshratelimitadditional"		"1"
+		"convar_@nserverrefreshratelimitinterval"		"5"
+		"convar_rtime32earliestsubscribedfiletodownload"		"1354389910"
+		"convar_@bshowuninstalleddemosinlibrary"		"1"
+		"convar_nprivatebetabranches"		"2"
+		"newsurl"		"https://store.steampowered.com/news/"
+		"state"		"eStateAvailable"
+		"storefrontcdnurl"		"https://steamstore-a.akamaihd.net"
+		"storefronturl"		"https://store.steampowered.com"
+		"validoslist"		"windows,macos"
+		"alienwareoemid"		"8,9,10,11,15"
+		"manage_steamguard_useweb"		"1"
+		"steamvrautoinstall"		"0"
+		"traderegions"
+		{
+			"rcis"
+			{
+				"countries"
+				{
+					"am"		"1"
+					"az"		"1"
+					"by"		"1"
+					"ge"		"1"
+					"kg"		"1"
+					"kz"		"1"
+					"md"		"1"
+					"tj"		"1"
+					"tm"		"1"
+					"uz"		"1"
+					"ua"		"1"
+					"ru"		"1"
+				}
+			}
+			"csa"
+			{
+				"countries"
+				{
+					"bz"		"1"
+					"cr"		"1"
+					"sv"		"1"
+					"gt"		"1"
+					"hn"		"1"
+					"ni"		"1"
+					"pa"		"1"
+					"bs"		"1"
+					"ec"		"1"
+					"co"		"1"
+					"ve"		"1"
+					"pe"		"1"
+					"cl"		"1"
+					"uy"		"1"
+					"py"		"1"
+					"ar"		"1"
+					"bo"		"1"
+					"gy"		"1"
+					"sr"		"1"
+					"br"		"1"
+					"mx"		"1"
+				}
+			}
+			"try"
+			{
+				"countries"
+				{
+					"tr"		"1"
+				}
+			}
+			"sea"
+			{
+				"countries"
+				{
+					"id"		"1"
+					"my"		"1"
+					"ph"		"1"
+					"sg"		"1"
+					"th"		"1"
+					"vn"		"1445382000"
+				}
+			}
+			"cyn"
+			{
+				"countries"
+				{
+					"cn"		"1446595200"
+				}
+			}
+			"inr"
+			{
+				"countries"
+				{
+					"in"		"1446595200"
+				}
+			}
+			"asia"
+			{
+				"countries"
+				{
+					"hk"		"1446595200"
+					"tw"		"1446595200"
+				}
+			}
+			"zar"
+			{
+				"countries"
+				{
+					"za"		"1447200000"
+				}
+			}
+			"mide"
+			{
+				"countries"
+				{
+					"sa"		"1447200000"
+					"ae"		"1447200000"
+				}
+			}
+		}
+		"steaminstaller"
+		{
+			"dota2setup.exe"		"570"
+			"steamvivesetup.exe"		"250820"
+			"steamvivesetupbeta.exe"		"250820"
+			"steamwindowsmrinstaller.exe"		"250820,719950"
+			"windowsmraltspaceinstaller.exe"		"250820,719950,407060"
+			"steamvrtakehometest.exe"		"250820,820350,633750,887260,546560"
+			"steamvrsetup.exe"		"250820"
+			"steamsetupdpvr.exe"		"250820,762200"
+		}
+	}
+	"config"
+	{
+		"steam_china_only"
+		{
+			"steam_china_enable_duration_control"		"0"
+		}
+		"client_cell_list"
+		{
+			"1"
+			{
+				"loc_name"		"us_chicago"
+			}
+			"2"
+			{
+				"loc_name"		"us_newyork"
+			}
+			"4"
+			{
+				"loc_name"		"uk_london"
+			}
+			"5"
+			{
+				"loc_name"		"de_frankfurt"
+			}
+			"7"
+			{
+				"loc_name"		"ru_moscow"
+			}
+			"8"
+			{
+				"loc_name"		"kr_seoul"
+			}
+			"9"
+			{
+				"loc_name"		"tw_taiwan"
+			}
+			"10"
+			{
+				"loc_name"		"us_sanjose"
+			}
+			"11"
+			{
+				"loc_name"		"us_phoenix"
+			}
+			"12"
+			{
+				"loc_name"		"us_miami"
+			}
+			"14"
+			{
+				"loc_name"		"fr_paris"
+			}
+			"15"
+			{
+				"loc_name"		"nl_amsterdam"
+			}
+			"16"
+			{
+				"loc_name"		"ro_bucharest"
+			}
+			"20"
+			{
+				"loc_name"		"ca_toronto"
+			}
+			"22"
+			{
+				"loc_name"		"nz_auckland"
+			}
+			"25"
+			{
+				"loc_name"		"br_sao_paulo"
+			}
+			"26"
+			{
+				"loc_name"		"za_johannesburg"
+			}
+			"29"
+			{
+				"loc_name"		"iceland"
+			}
+			"30"
+			{
+				"loc_name"		"israel"
+			}
+			"31"
+			{
+				"loc_name"		"us_seattle"
+			}
+			"32"
+			{
+				"loc_name"		"jp_tokyo"
+			}
+			"33"
+			{
+				"loc_name"		"cn_hongkong"
+			}
+			"34"
+			{
+				"loc_name"		"th_bangkok"
+			}
+			"35"
+			{
+				"loc_name"		"singapore"
+			}
+			"36"
+			{
+				"loc_name"		"in_mumbai"
+			}
+			"37"
+			{
+				"loc_name"		"it_rome"
+			}
+			"38"
+			{
+				"loc_name"		"pl_warsaw"
+			}
+			"39"
+			{
+				"loc_name"		"ru_yekaterinburg"
+			}
+			"40"
+			{
+				"loc_name"		"es_madrid"
+			}
+			"41"
+			{
+				"loc_name"		"dk_copenhagen"
+			}
+			"42"
+			{
+				"loc_name"		"cz_prague"
+			}
+			"43"
+			{
+				"loc_name"		"gr_athens"
+			}
+			"44"
+			{
+				"loc_name"		"in_jakarta"
+			}
+			"45"
+			{
+				"loc_name"		"ph_manila"
+			}
+			"46"
+			{
+				"loc_name"		"cn_beijing"
+				"steamchina"		"1"
+			}
+			"47"
+			{
+				"loc_name"		"cn_shanghai"
+				"steamchina"		"1"
+			}
+			"48"
+			{
+				"loc_name"		"cn_chengdu"
+				"steamchina"		"1"
+			}
+			"49"
+			{
+				"loc_name"		"us_denver"
+			}
+			"50"
+			{
+				"loc_name"		"us_atlanta"
+			}
+			"51"
+			{
+				"loc_name"		"au_brisbane"
+			}
+			"52"
+			{
+				"loc_name"		"au_sydney"
+			}
+			"53"
+			{
+				"loc_name"		"au_melbourne"
+			}
+			"54"
+			{
+				"loc_name"		"au_adelaide"
+			}
+			"55"
+			{
+				"loc_name"		"au_perth"
+			}
+			"62"
+			{
+				"loc_name"		"ru_novosibirsk"
+			}
+			"63"
+			{
+				"loc_name"		"us_dc"
+			}
+			"64"
+			{
+				"loc_name"		"us_la"
+			}
+			"65"
+			{
+				"loc_name"		"us_dallas"
+			}
+			"66"
+			{
+				"loc_name"		"se_stockholm"
+			}
+			"67"
+			{
+				"loc_name"		"no_oslo"
+			}
+			"68"
+			{
+				"loc_name"		"fi_helsinki"
+			}
+			"69"
+			{
+				"loc_name"		"ie_dublin"
+			}
+			"70"
+			{
+				"loc_name"		"cambodia"
+			}
+			"71"
+			{
+				"loc_name"		"vietnam"
+			}
+			"72"
+			{
+				"loc_name"		"my_kualalumpur"
+			}
+			"73"
+			{
+				"loc_name"		"ua_kiev"
+			}
+			"74"
+			{
+				"loc_name"		"us_sandiego"
+			}
+			"75"
+			{
+				"loc_name"		"us_sacramento"
+			}
+			"76"
+			{
+				"loc_name"		"us_minneapolis"
+			}
+			"77"
+			{
+				"loc_name"		"us_stlouis"
+			}
+			"78"
+			{
+				"loc_name"		"us_houston"
+			}
+			"79"
+			{
+				"loc_name"		"us_detroit"
+			}
+			"80"
+			{
+				"loc_name"		"us_pittsburgh"
+			}
+			"81"
+			{
+				"loc_name"		"ca_montreal"
+			}
+			"82"
+			{
+				"loc_name"		"us_boston"
+			}
+			"83"
+			{
+				"loc_name"		"us_philadelphia"
+			}
+			"84"
+			{
+				"loc_name"		"us_charlotte"
+			}
+			"85"
+			{
+				"loc_name"		"uk_manchester"
+			}
+			"86"
+			{
+				"loc_name"		"belgium"
+			}
+			"87"
+			{
+				"loc_name"		"de_dusseldorf"
+			}
+			"88"
+			{
+				"loc_name"		"switzerland"
+			}
+			"89"
+			{
+				"loc_name"		"de_hamburg"
+			}
+			"90"
+			{
+				"loc_name"		"de_berlin"
+			}
+			"91"
+			{
+				"loc_name"		"de_munich"
+			}
+			"92"
+			{
+				"loc_name"		"at_vienna"
+			}
+			"93"
+			{
+				"loc_name"		"hu_budapest"
+			}
+			"94"
+			{
+				"loc_name"		"ca_vancouver"
+			}
+			"95"
+			{
+				"loc_name"		"us_columbus"
+			}
+			"96"
+			{
+				"loc_name"		"fr_marseille"
+			}
+			"97"
+			{
+				"loc_name"		"za_capetown"
+			}
+			"115"
+			{
+				"loc_name"		"mx_mexicocity"
+			}
+			"116"
+			{
+				"loc_name"		"ar_buenosaires"
+			}
+			"117"
+			{
+				"loc_name"		"cl_santiago"
+			}
+			"118"
+			{
+				"loc_name"		"pe_lima"
+			}
+			"119"
+			{
+				"loc_name"		"co_bogota"
+			}
+			"124"
+			{
+				"loc_name"		"tr_istanbul"
+			}
+			"125"
+			{
+				"loc_name"		"eg_cairo"
+			}
+			"126"
+			{
+				"loc_name"		"sa_riyadh"
+			}
+			"127"
+			{
+				"loc_name"		"ua_dubai"
+			}
+			"128"
+			{
+				"loc_name"		"pk_karachi"
+			}
+			"129"
+			{
+				"loc_name"		"luxembourg"
+			}
+			"130"
+			{
+				"loc_name"		"ng_lagos"
+			}
+			"131"
+			{
+				"loc_name"		"ke_nairobi"
+			}
+			"132"
+			{
+				"loc_name"		"ma_rabat"
+			}
+			"133"
+			{
+				"loc_name"		"ca_edmonton"
+			}
+			"134"
+			{
+				"loc_name"		"ca_calgary"
+			}
+			"135"
+			{
+				"loc_name"		"ca_winnipeg"
+			}
+			"136"
+			{
+				"loc_name"		"ca_ottawa"
+			}
+			"139"
+			{
+				"loc_name"		"panama"
+			}
+			"140"
+			{
+				"loc_name"		"puerto_rico"
+			}
+			"141"
+			{
+				"loc_name"		"in_chennai"
+			}
+			"142"
+			{
+				"loc_name"		"in_delhi"
+			}
+			"143"
+			{
+				"loc_name"		"in_bangalore"
+			}
+			"144"
+			{
+				"loc_name"		"in_hyderabad"
+			}
+			"145"
+			{
+				"loc_name"		"in_kolkata"
+			}
+			"146"
+			{
+				"loc_name"		"us_honolulu"
+			}
+			"147"
+			{
+				"loc_name"		"us_anchorage"
+			}
+			"148"
+			{
+				"loc_name"		"cn_guangzhou"
+				"steamchina"		"1"
+			}
+			"149"
+			{
+				"loc_name"		"ru_stpetersburg"
+			}
+			"150"
+			{
+				"loc_name"		"ru_rostov"
+			}
+			"151"
+			{
+				"loc_name"		"ru_kazan"
+			}
+			"152"
+			{
+				"loc_name"		"ru_vladivostok"
+			}
+			"153"
+			{
+				"loc_name"		"br_recife"
+			}
+			"154"
+			{
+				"loc_name"		"br_brasilia"
+			}
+			"155"
+			{
+				"loc_name"		"br_rio"
+			}
+			"156"
+			{
+				"loc_name"		"br_portoalegre"
+			}
+			"157"
+			{
+				"loc_name"		"ru_irkutsk"
+			}
+			"158"
+			{
+				"loc_name"		"kazakhstan"
+			}
+			"159"
+			{
+				"loc_name"		"cn_wuhan"
+				"steamchina"		"1"
+			}
+			"160"
+			{
+				"loc_name"		"cn_xian"
+				"steamchina"		"1"
+			}
+			"161"
+			{
+				"loc_name"		"mongolia"
+			}
+			"162"
+			{
+				"loc_name"		"venezuela"
+			}
+			"163"
+			{
+				"loc_name"		"ecuador"
+			}
+			"164"
+			{
+				"loc_name"		"bolivia"
+			}
+			"165"
+			{
+				"loc_name"		"belarus"
+			}
+			"166"
+			{
+				"loc_name"		"cn_harbin"
+				"steamchina"		"1"
+			}
+			"167"
+			{
+				"loc_name"		"cn_kunming"
+				"steamchina"		"1"
+			}
+			"168"
+			{
+				"loc_name"		"cn_qingdao"
+				"steamchina"		"1"
+			}
+			"169"
+			{
+				"loc_name"		"cn_urumqi"
+				"steamchina"		"1"
+			}
+			"170"
+			{
+				"loc_name"		"cn_zhengzhou"
+				"steamchina"		"1"
+			}
+			"171"
+			{
+				"loc_name"		"cn_changsha"
+				"steamchina"		"1"
+			}
+			"172"
+			{
+				"loc_name"		"caucasus"
+			}
+			"173"
+			{
+				"loc_name"		"central_asia"
+			}
+			"174"
+			{
+				"loc_name"		"pacific_islands"
+			}
+			"175"
+			{
+				"loc_name"		"se_malmo"
+			}
+			"176"
+			{
+				"loc_name"		"se_goteborg"
+			}
+			"177"
+			{
+				"loc_name"		"jp_sapporo"
+			}
+			"178"
+			{
+				"loc_name"		"jp_sendai"
+			}
+			"179"
+			{
+				"loc_name"		"jp_nagoya"
+			}
+			"180"
+			{
+				"loc_name"		"jp_osaka"
+			}
+			"181"
+			{
+				"loc_name"		"jp_fukuoka"
+			}
+			"182"
+			{
+				"loc_name"		"kr_busan"
+			}
+			"183"
+			{
+				"loc_name"		"pl_katowice"
+			}
+			"184"
+			{
+				"loc_name"		"it_milan"
+			}
+			"185"
+			{
+				"loc_name"		"portugal"
+			}
+			"186"
+			{
+				"loc_name"		"es_barcelona"
+			}
+			"187"
+			{
+				"loc_name"		"es_valencia"
+			}
+			"188"
+			{
+				"loc_name"		"es_malaga"
+			}
+			"189"
+			{
+				"loc_name"		"tr_ankara"
+			}
+			"190"
+			{
+				"loc_name"		"tr_izmir"
+			}
+			"191"
+			{
+				"loc_name"		"ua_odessa"
+			}
+			"192"
+			{
+				"loc_name"		"ua_lviv"
+			}
+			"193"
+			{
+				"loc_name"		"ua_kharkiv"
+			}
+			"194"
+			{
+				"loc_name"		"bulgaria"
+			}
+			"195"
+			{
+				"loc_name"		"croatia"
+			}
+			"196"
+			{
+				"loc_name"		"lithuania"
+			}
+			"197"
+			{
+				"loc_name"		"cn_suzhou"
+				"steamchina"		"1"
+			}
+			"198"
+			{
+				"loc_name"		"cn_hangzhou"
+				"steamchina"		"1"
+			}
+			"199"
+			{
+				"loc_name"		"cn_ningbo"
+				"steamchina"		"1"
+			}
+			"200"
+			{
+				"loc_name"		"cn_nanjing"
+				"steamchina"		"1"
+			}
+			"201"
+			{
+				"loc_name"		"cn_shenzhen"
+				"steamchina"		"1"
+			}
+			"202"
+			{
+				"loc_name"		"cn_dongguan"
+				"steamchina"		"1"
+			}
+			"203"
+			{
+				"loc_name"		"cn_tianjin"
+				"steamchina"		"1"
+			}
+			"204"
+			{
+				"loc_name"		"cn_chongqing"
+				"steamchina"		"1"
+			}
+			"205"
+			{
+				"loc_name"		"cn_shenyang"
+				"steamchina"		"1"
+			}
+			"206"
+			{
+				"loc_name"		"cn_dalian"
+				"steamchina"		"1"
+			}
+			"207"
+			{
+				"loc_name"		"us_austin"
+			}
+			"208"
+			{
+				"loc_name"		"ph_cebu"
+			}
+			"209"
+			{
+				"loc_name"		"ph_davao"
+			}
+			"210"
+			{
+				"loc_name"		"ph_baguio"
+			}
+			"211"
+			{
+				"loc_name"		"cn_nanning"
+				"steamchina"		"1"
+			}
+			"212"
+			{
+				"loc_name"		"canary_islands"
+			}
+			"213"
+			{
+				"loc_name"		"maritius"
+			}
+			"214"
+			{
+				"loc_name"		"reunion"
+			}
+			"215"
+			{
+				"loc_name"		"kuwait"
+			}
+			"216"
+			{
+				"loc_name"		"ua_sevastopol"
+			}
+		}
+	}
+	"depots"
+	{
+		"branches"
+		{
+			"steam_china_only"
+			{
+				"sc_schinese"		"仅中国"
+			}
+		}
+	}
+	"ufs"
+	{
+		"quota"		"100000000"
+		"maxnumfiles"		"10"
+	}
+}

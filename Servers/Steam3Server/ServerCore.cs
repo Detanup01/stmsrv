@@ -20,18 +20,22 @@ public class ServerCore
         DebugPrinter.EnableLogs = true;
         MainConfig.Instance();
         DBPrepare.Prepare(MainConfig.Instance().DatabaseConfig.AlwaysRegenerateInfoDBs);
+        CustomPICSVersioning.Init();
         AppInfoExtra.ReadAll();
         PackageInfoExtra.ReadAll();
         SslContext context = CertHelper.GetContext(SslProtocols.Tls12, $"Keys/global.pfx", "global");
         ServerWeb = new("192.168.1.50", 80);
+        ServerWeb.HeaderAttributeToMethods.Merge(Assembly.GetAssembly(typeof(ServerCore)));
         ServerWeb.HTTP_AttributeToMethods.Merge(Assembly.GetAssembly(typeof(ServerCore)));
         ServerWeb.WS_AttributeToMethods = AttributeMethodHelper.UrlWSLoader(Assembly.GetAssembly(typeof(ServerCore)));
         ServerWeb.ReceivedFailed += ReceivedFailed;
         ServerWeb.Start();
         ServerWebSLL = new(context, "192.168.1.50", 443);
+        ServerWebSLL.HeaderAttributeToMethods.Merge(Assembly.GetAssembly(typeof(ServerCore)));
         ServerWebSLL.HTTP_AttributeToMethods.Merge(Assembly.GetAssembly(typeof(ServerCore)));
-        ServerWebSLL.WS_AttributeToMethods = AttributeMethodHelper.UrlWSLoader(Assembly.GetAssembly(typeof(ServerCore)));
+        ServerWebSLL.WS_AttributeToMethods.Merge(Assembly.GetAssembly(typeof(ServerCore)));
         ServerWebSLL.ReceivedFailed += ReceivedFailed;
+
         ServerWebSLL.Start();
         //this sending out our IP's and our MAC ADDRESS. (Or the clients)
         //STEAMDISCOVER server?
@@ -48,6 +52,7 @@ public class ServerCore
     {
         ServerWeb?.Stop();
         ServerWebSLL?.Stop();
+        CustomPICSVersioning.Quit();
     }
 
     private static void ReceivedFailed(object? sender, HttpRequest request)

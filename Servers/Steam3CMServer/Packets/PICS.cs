@@ -40,7 +40,7 @@ public class PICS
     {
         //  Apps buffer is text VDF, and package buffer is binary VDF
         // only meta data will be returned in the reponse (e.g. change number, missing_token, sha1)
-        var proto = CMsgClientPICSProductInfoRequest.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
+        var proto = clientMsgProtobuf.GetBody<CMsgClientPICSProductInfoRequest>();
         if (!Directory.Exists("Packets"))
             Directory.CreateDirectory("Packets");
         File.AppendAllText("Packets/ProductInfo.txt", "REQ:" + proto.ToString() + "\n");
@@ -58,6 +58,10 @@ public class PICS
             {
                 UnknownApps.Add(item.Appid);
             }
+            else if (item.AccessToken != 0)
+            {
+                // check if AT is good with it.
+            }
             else
             {
                 var data = japp.GetAppInfoStringData();
@@ -68,9 +72,9 @@ public class PICS
                     Sha = ByteString.CopyFrom(japp.Hash),
                     Size = (uint)data.Length,
                     MissingToken = false,
-                    OnlyPublic = false, 
+                    OnlyPublic = false,
                 };
-                if (!proto.MetaDataOnly) 
+                if (!proto.MetaDataOnly)
                 {
                     app.Buffer = ByteString.CopyFrom(data);
                 }
@@ -79,7 +83,6 @@ public class PICS
         }
         protoRSP.Body.UnknownAppids.AddRange(UnknownApps);
         protoRSP.Body.Apps.AddRange(appInfos);
-
         List<CMsgClientPICSProductInfoResponse.Types.PackageInfo> pkgInfos = new();
         List<uint> UnkownPKGs = new();
         var pkgs = proto.Packages.ToList();
@@ -118,7 +121,7 @@ public class PICS
         protoRSP.Body.UnknownPackageids.AddRange(UnkownPKGs);
         protoRSP.Body.Packages.AddRange(pkgInfos);
         protoRSP.Body.HttpMinSize = 4096;
-        protoRSP.Body.HttpHost = "clientconfig.local.steamstatic.com";
+        protoRSP.Body.HttpHost = "192.168.1.50"; //Replace this with custom url.
         protoRSP.Body.ResponsePending = false;
         if (!Directory.Exists("Packets"))
             Directory.CreateDirectory("Packets");
@@ -128,7 +131,7 @@ public class PICS
 
     static void ChangesSince(PacketClientMsgProtobuf clientMsgProtobuf, WebSocketStruct webSocket)
     {
-        var proto = CMsgClientPICSChangesSinceRequest.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
+        var proto = clientMsgProtobuf.GetBody<CMsgClientPICSChangesSinceRequest>();
         if (!Directory.Exists("Packets"))
             Directory.CreateDirectory("Packets");
         File.AppendAllText("Packets/ChangesSince.txt", "REQ:" + proto.ToString() + "\n");
@@ -179,7 +182,7 @@ public class PICS
 
     static void AccessToken(PacketClientMsgProtobuf clientMsgProtobuf, WebSocketStruct webSocket)
     {
-        var proto = CMsgClientPICSAccessTokenRequest.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
+        var proto = clientMsgProtobuf.GetBody<CMsgClientPICSAccessTokenRequest>();
         if (!Directory.Exists("Packets"))
             Directory.CreateDirectory("Packets");
         File.AppendAllText("Packets/AccessToken.txt", "REQ:" + proto.ToString() + "\n");

@@ -22,29 +22,34 @@ public class PackageInfoExtra
          */
         foreach (var vdfFile in Directory.GetFiles("PackageInfo", "*.vdf"))
         {
-            VDFHelper.ReadVDF_File(vdfFile, "PackageInfo", out uint subId, out byte[] sha_binhash, out byte[] sha_texthash, out byte[] bin_bytes, out byte[] text_bytes);
-            var idtoken = Packages.FirstOrDefault(x => x.Id == subId);
+            int ret = VDFHelper.ReadVDF_File(vdfFile, "PackageInfo", out uint subId, out byte[] sha_binhash, out byte[] sha_texthash, out byte[] bin_bytes, out byte[] text_bytes);
+            if (ret == 0)
+                continue;
+            IdAndToken? idtoken = Packages.FirstOrDefault(x => x.Id == subId);
             if (idtoken == null)
             {
                 idtoken = new();
             }
+            JPackage? jPackage = DBPackages.GetPackage(subId);
+            if (jPackage != null && jPackage.Hash == sha_texthash)
+                continue;
             CustomPICSVersioning.IndicateChange();
-            var latest_pics = CustomPICSVersioning.GetLast();
-            var jPackage = DBPackages.GetPackage(subId);
+            var (changeid, time) = CustomPICSVersioning.GetLast();
             if (jPackage == null)
             {
-                DBPackages.AddPackage(new JPackage()
+                DBPackages.AddPackage(new()
                 {
                     SubID = subId,
-                    ChangeNumber = latest_pics.changeid,
+                    ChangeNumber = changeid,
                     DataBytes = bin_bytes,
                     Hash = sha_texthash,
                     Token = idtoken.Token
                 });
+                continue;
             }
             else
             {
-                jPackage.ChangeNumber = latest_pics.changeid;
+                jPackage.ChangeNumber = changeid;
                 jPackage.DataBytes = bin_bytes;
                 jPackage.Hash = sha_texthash;
                 jPackage.Token = idtoken.Token;

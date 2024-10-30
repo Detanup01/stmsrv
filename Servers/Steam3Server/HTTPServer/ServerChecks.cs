@@ -22,4 +22,11 @@ internal class ServerChecks
         serverStruct.SendResponse();
         return true;
     }
+    [HTTP("GET", "/ipv6check")]
+    public static bool ipv6check(HttpRequest _, ServerStruct serverStruct)
+    {
+        serverStruct.Response.MakeErrorResponse();
+        serverStruct.SendResponse();
+        return true;
+    }
 }

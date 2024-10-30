@@ -1,0 +1,528 @@
+"appinfo"
+{
+	"appid"		"228980"
+	"common"
+	{
+		"name"		"Steamworks Common Redistributables"
+		"type"		"Tool"
+		"releasestate"		"released"
+		"oslist"		"windows,macos,linux"
+		"logo"		"7f21728cc935be25cc68967fe2efe5f5cb41f1c5"
+		"logo_small"		"7f21728cc935be25cc68967fe2efe5f5cb41f1c5_thumb"
+		"icon"		"c9036837d770245e72fc968c04a77966594930b5"
+		"releasestatesteamchina"		"released"
+		"name_localized"
+		{
+			"brazilian"		"Redistribuíveis Comuns do Steamworks"
+			"czech"		"Běžné podpůrné programy (Steamworks)"
+			"danish"		"Almindelige redistributables til Steamworks"
+			"dutch"		"Algemene herdistribueerbare pakketten voor Steamworks"
+			"finnish"		"Steamworksin edelleenjaeltavat osat"
+			"french"		"Redistribuables communs Steamworks"
+			"german"		"Steamworks’ Gängige Redistributables"
+			"greek"		"Κοινό πακέτο αναδιανομής Steamworks"
+			"hungarian"		"Steamworks gyakori terjeszthető fájlok"
+			"italian"		"Ridistribuibili comuni di Steamworks"
+			"japanese"		"Steamworks共通再頒布可能コンポーネント"
+			"koreana"		"Steamworks 공통 재배포 패키지"
+			"latam"		"Redistribuibles comunes de Steamworks"
+			"norwegian"		"Omdistribuerbare filer for Steamworks"
+			"polish"		"Pospolite pakiety redystrybucyjne Steamworks"
+			"portuguese"		"Redistribuíveis Comuns do Steamworks"
+			"romanian"		"Redistribuibile Steamworks obișnuite"
+			"russian"		"Основные редистрибутивные пакеты Steamworks"
+			"schinese"		"Steamworks 常见可再发行文件"
+			"spanish"		"Redistribuibles comunes de Steamworks"
+			"swedish"		"Nödvändiga filer för Steamworks"
+			"tchinese"		"Steamworks 常見可轉散發檔案"
+			"thai"		"Redistributable ที่ใช้ร่วมกันใน Steamworks"
+			"turkish"		"Steamworks Ortak Depoları"
+			"ukrainian"		"Основні компоненти вторинного розповсюдження Steamworks"
+			"vietnamese"		"Redistributable phổ biến trên Steamworks"
+		}
+		"header_image"
+		{
+			"english"		"header.jpg"
+		}
+		"library_assets"
+		{
+			"library_hero"		"en"
+			"library_logo"		"en"
+			"logo_position"
+			{
+				"pinned_position"		"BottomLeft"
+				"width_pct"		"55.69767441860464"
+				"height_pct"		"100"
+			}
+		}
+		"library_assets_full"
+		{
+			"library_hero"
+			{
+				"image"
+				{
+					"english"		"library_hero.jpg"
+				}
+			}
+			"library_logo"
+			{
+				"image"
+				{
+					"english"		"logo.png"
+				}
+				"logo_position"
+				{
+					"pinned_position"		"BottomLeft"
+					"width_pct"		"55.69767441860464"
+					"height_pct"		"100"
+				}
+			}
+		}
+		"store_asset_mtime"		"1622071896"
+		"associations"
+		{
+		}
+		"gameid"		"228980"
+	}
+	"config"
+	{
+		"installdir"		"Steamworks Shared"
+		"requiredefaultinstallfolder"		"1"
+		"launch"
+		{
+			"0"
+			{
+				"executable"		"steam://open/tools"
+				"type"		"default"
+			}
+		}
+	}
+	"depots"
+	{
+		"onlymountshareddepots"		"1"
+		"228981"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"7613356809904826842"
+					"size"		"5884085"
+					"download"		"5804736"
+				}
+			}
+		}
+		"228982"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"6413394087650432851"
+					"size"		"9688647"
+					"download"		"9650016"
+				}
+			}
+		}
+		"228983"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"8124929965194586177"
+					"size"		"19265607"
+					"download"		"19214528"
+				}
+			}
+		}
+		"228984"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"2547553897526095397"
+					"size"		"13742505"
+					"download"		"13436144"
+				}
+			}
+		}
+		"228985"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"3966345552745568756"
+					"size"		"13699237"
+					"download"		"13244128"
+				}
+			}
+		}
+		"228986"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"8782296191957114623"
+					"size"		"29759921"
+					"download"		"23045488"
+				}
+			}
+		}
+		"228987"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"4302102680580581867"
+					"size"		"29664201"
+					"download"		"22936736"
+				}
+			}
+		}
+		"228988"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"6645201662696499616"
+					"size"		"29212173"
+					"download"		"22411856"
+				}
+			}
+		}
+		"228989"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"605068181696187697"
+					"size"		"39266820"
+					"download"		"38742608"
+				}
+			}
+		}
+		"228990"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"1829726630299308803"
+					"size"		"102931551"
+					"download"		"100658080"
+				}
+			}
+		}
+		"229000"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"4622705914179893434"
+					"size"		"242743889"
+					"download"		"242681440"
+				}
+			}
+		}
+		"229001"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"4049573910112143457"
+					"size"		"267964564"
+					"download"		"268006912"
+				}
+			}
+		}
+		"229002"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"7260605429366465749"
+					"size"		"50450161"
+					"download"		"50365280"
+				}
+			}
+		}
+		"229003"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"8740933542064151477"
+					"size"		"43001447"
+					"download"		"42914928"
+				}
+			}
+		}
+		"229004"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"5220958916987797232"
+					"size"		"70000464"
+					"download"		"70811632"
+				}
+			}
+		}
+		"229005"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"7992454656023763365"
+					"size"		"62009092"
+					"download"		"62722592"
+				}
+			}
+		}
+		"229006"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"1784011429307107530"
+					"size"		"83944258"
+					"download"		"84953712"
+				}
+			}
+		}
+		"229007"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"4477590687906973371"
+					"size"		"117381405"
+					"download"		"118846656"
+				}
+			}
+		}
+		"229010"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"3476809898398882586"
+					"size"		"7982688"
+					"download"		"7193488"
+				}
+			}
+		}
+		"229011"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"392351049714934122"
+					"size"		"7672416"
+					"download"		"6911680"
+				}
+			}
+		}
+		"229012"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"4353723233161159493"
+					"size"		"7061608"
+					"download"		"6387264"
+				}
+			}
+		}
+		"229020"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"5799761707845834510"
+					"size"		"810085"
+					"download"		"591984"
+				}
+			}
+		}
+		"229030"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"1043465440436835055"
+					"size"		"51790718"
+					"download"		"50071472"
+				}
+			}
+		}
+		"229031"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"7746630274301172884"
+					"size"		"26729083"
+					"download"		"25905472"
+				}
+			}
+		}
+		"229032"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"3616495131483866412"
+					"size"		"41178235"
+					"download"		"40038080"
+				}
+			}
+		}
+		"229033"
+		{
+			"config"
+			{
+				"oslist"		"windows"
+			}
+			"manifests"
+			{
+				"public"
+				{
+					"gid"		"2059065101492814639"
+					"size"		"60039803"
+					"download"		"59325760"
+				}
+			}
+		}
+		"branches"
+		{
+			"public"
+			{
+				"buildid"		"14615842"
+				"timeupdated"		"1717608848"
+			}
+		}
+	}
+}

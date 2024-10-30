@@ -34,44 +34,10 @@ public class ClientMetrics
 
     private static void ClientBootstrapReport(PacketClientMsgProtobuf clientMsgProtobuf, WebSocketStruct webSocket)
     {
-        try
-        {
-            var req = CClientMetrics_ClientBootstrap_Notification.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
-            if (!Directory.Exists("ServiceMethods"))
-                Directory.CreateDirectory("ServiceMethods");
-            File.AppendAllText("ServiceMethods/ClientBootstrapReport.txt", req.ToString() + "\n");
-        }
-        catch
-        {
-            
-
-        }
-
-        try
-        {
-            var req = CClientMetrics_ClientBootstrap_RequestInfo.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
-            if (!Directory.Exists("ServiceMethods"))
-                Directory.CreateDirectory("ServiceMethods");
-            File.AppendAllText("ServiceMethods/ClientBootstrapReport.txt", req.ToString() + "\n");
-        }
-        catch
-        {
-
-
-        }
-
-
-        try
-        {
-            var req = CClientMetrics_ClientBootstrap_Summary.Parser.ParseFrom(clientMsgProtobuf.GetData()[(int)clientMsgProtobuf.BodyOffset..]);
-            if (!Directory.Exists("ServiceMethods"))
-                Directory.CreateDirectory("ServiceMethods");
-            File.AppendAllText("ServiceMethods/ClientBootstrapReport.txt", req.ToString() + "\n");
-        }
-        catch
-        {
-
-
-        }
+        
+        var req = clientMsgProtobuf.GetBody<CClientMetrics_ClientBootstrap_Notification>();
+        if (!Directory.Exists("ServiceMethods"))
+            Directory.CreateDirectory("ServiceMethods");
+        File.AppendAllText("ServiceMethods/ClientBootstrapReport.txt", req.ToString() + "\n");
     }
 }
